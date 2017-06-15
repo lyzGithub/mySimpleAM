@@ -30,10 +30,10 @@ import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.exceptions.ApplicationAttemptNotFoundException;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.AMRMClient;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.AMRMClient.ContainerRequest;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.async.AMRMClientAsync;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.AMRMClientImpl;
+import com.application.api.AMRMClient;
+import com.application.api.AMRMClient.ContainerRequest;
+import com.application.api.async.AMRMClientAsync;
+import com.application.api.impl.AMRMClientImpl;
 
 import java.io.IOException;
 import java.util.Collection;

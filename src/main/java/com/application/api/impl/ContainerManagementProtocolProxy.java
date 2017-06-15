@@ -36,7 +36,7 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
 import org.apache.hadoop.yarn.ipc.YarnRPC;
 import org.apache.hadoop.yarn.security.NMTokenIdentifier;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.NMTokenCache;
+import com.application.api.NMTokenCache;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 
 import java.net.InetSocketAddress;

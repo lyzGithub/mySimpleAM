@@ -35,8 +35,7 @@ import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.Priority;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.exceptions.YarnException;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.AMRMClientImpl;
-
+import com.application.api.impl.AMRMClientImpl;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;

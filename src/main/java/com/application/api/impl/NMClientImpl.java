@@ -29,8 +29,8 @@ import org.apache.hadoop.yarn.api.protocolrecords.*;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.ipc.RPCUtil;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.NMClient;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.ContainerManagementProtocolProxy.ContainerManagementProtocolProxyData;
+import com.application.api.NMClient;
+import com.application.api.impl.ContainerManagementProtocolProxy.ContainerManagementProtocolProxyData;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

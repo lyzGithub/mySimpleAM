@@ -25,9 +25,9 @@ import org.apache.hadoop.classification.InterfaceStability.Stable;
 import org.apache.hadoop.service.AbstractService;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.NMClient;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.async.impl.NMClientAsyncImpl;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.NMClientImpl;
+import com.application.api.NMClient;
+import com.application.api.async.impl.NMClientAsyncImpl;
+import com.application.api.impl.NMClientImpl;
 
 import java.nio.ByteBuffer;
 import java.util.Map;

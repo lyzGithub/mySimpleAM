@@ -31,9 +31,9 @@ import org.apache.hadoop.yarn.event.AbstractEvent;
 import org.apache.hadoop.yarn.event.EventHandler;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.ipc.RPCUtil;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.NMClient;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.async.NMClientAsync;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.NMClientImpl;
+import com.application.api.NMClient;
+import com.application.api.async.NMClientAsync;
+import com.application.api.impl.NMClientImpl;
 import org.apache.hadoop.yarn.state.*;
 
 import java.io.IOException;

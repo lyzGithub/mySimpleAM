@@ -29,7 +29,7 @@ import org.apache.hadoop.yarn.client.AHSProxy;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.AHSClient;
+import com.application.api.AHSClient;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

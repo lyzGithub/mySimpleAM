@@ -18,6 +18,7 @@
 
 package com.application.api;
 
+import com.application.api.impl.YarnClientImpl;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceAudience.Public;
 import org.apache.hadoop.classification.InterfaceStability;
@@ -31,7 +32,6 @@ import org.apache.hadoop.yarn.exceptions.ApplicationIdNotProvidedException;
 import org.apache.hadoop.yarn.exceptions.ApplicationNotFoundException;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.security.AMRMTokenIdentifier;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.YarnClientImpl;
 
 import java.io.IOException;
 import java.util.EnumSet;

@@ -26,7 +26,7 @@ import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.exceptions.ApplicationAttemptNotFoundException;
 import org.apache.hadoop.yarn.exceptions.ContainerNotFoundException;
 import org.apache.hadoop.yarn.exceptions.YarnException;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.AHSClientImpl;
+import com.application.api.impl.AHSClientImpl;
 
 import java.io.IOException;
 import java.util.List;

@@ -38,9 +38,9 @@ import org.apache.hadoop.yarn.exceptions.ApplicationMasterNotRegisteredException
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
 import org.apache.hadoop.yarn.security.AMRMTokenIdentifier;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.AMRMClient;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.AMRMClient.ContainerRequest;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.InvalidContainerRequestException;
+import com.application.api.AMRMClient;
+import com.application.api.AMRMClient.ContainerRequest;
+import com.application.api.InvalidContainerRequestException;
 import org.apache.hadoop.yarn.util.RackResolver;
 
 import java.io.IOException;

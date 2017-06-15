@@ -25,13 +25,13 @@ import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.service.AbstractService;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.exceptions.YarnException;
-import org.apache.hadoop.yarn.server.resourcemanager.remoteSource.main.api.impl.NMClientImpl;
+
+import com.application.api.impl.NMClientImpl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-//import org.apache.hadoop.yarn.client.api.impl.NMClientImpl;
 
 @Public
 @InterfaceStability.Stable
