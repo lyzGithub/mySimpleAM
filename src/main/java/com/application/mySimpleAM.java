@@ -18,13 +18,16 @@
 
 package com.application;
 
+import com.application.UmAM.MiniYARNCluster;
+import com.application.UmAM.UnmanagedAMLauncher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
 import org.apache.hadoop.yarn.api.records.*;
-import com.application.api.AMRMClient;
+//import com.application.api.AMRMClient;
+import org.apache.hadoop.yarn.client.api.AMRMClient;
 import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -64,6 +67,7 @@ public class mySimpleAM implements Runnable{//
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("finish thread");
     }
 
     //this setup is set up the running env for application master
@@ -265,8 +269,8 @@ public class mySimpleAM implements Runnable{//
             rmClient.unregisterApplicationMaster(
                     FinalApplicationStatus.SUCCEEDED, "", "");
             System.out.println("Finish running am !");
-            return ;
-            //System.exit(0);
+
+            System.exit(0);
         } else {
             System.exit(1);
         }

@@ -16,7 +16,7 @@
 * limitations under the License.
 */
 
-package com.application;
+package com.application.UmAM;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.logging.Log;

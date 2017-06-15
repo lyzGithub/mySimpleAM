@@ -10,5 +10,6 @@ public class hellotest {
         mySimpleAM am = new mySimpleAM();
         Thread amTread = new Thread(am);
         amTread.start();
+        System.out.println("finish!");
     }
 }

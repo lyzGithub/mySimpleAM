@@ -16,22 +16,20 @@
  * limitations under the License.
  */
 
-package com.application;
+package com.application.UmAM;
 
+//import com.application.api.AMRMClient;
+import org.apache.hadoop.yarn.client.api.AMRMClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.net.NetUtils;
-import org.apache.hadoop.yarn.api.ApplicationMasterProtocol;
-import org.apache.hadoop.yarn.api.protocolrecords.FinishApplicationMasterRequest;
-import org.apache.hadoop.yarn.api.protocolrecords.FinishApplicationMasterResponse;
-import org.apache.hadoop.yarn.api.protocolrecords.RegisterApplicationMasterRequest;
-import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
-import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
-import org.apache.hadoop.yarn.api.records.YarnApplicationAttemptState;
-import org.apache.hadoop.yarn.client.ClientRMProxy;
+import org.apache.hadoop.yarn.api.ApplicationConstants;
+import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
+import org.apache.hadoop.yarn.api.records.*;
+import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
+import org.apache.hadoop.yarn.util.Records;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -39,6 +37,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
@@ -197,17 +196,82 @@ public class TestUnmanagedAMLauncher {
   */
   // provide main method so this class can act as AM
   public static void main(String[] args) throws Exception {
+
+    System.out.println("!!!!!!!!!!!!!!!!!!!!!stop a while in main!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // Thread.sleep(200);
     if (args[0].equals("success")) {
-      ApplicationMasterProtocol client = ClientRMProxy.createRMProxy(conf,
-          ApplicationMasterProtocol.class);
-      client.registerApplicationMaster(RegisterApplicationMasterRequest
-          .newInstance(NetUtils.getHostname(), -1, ""));
-      Thread.sleep(1000);
-      FinishApplicationMasterResponse resp =
-          client.finishApplicationMaster(FinishApplicationMasterRequest
-            .newInstance(FinalApplicationStatus.SUCCEEDED, "success", null));
-      assertTrue(resp.getIsUnregistered());
-      System.exit(0);
+
+      final String command = "hello";
+      final int n = 2;
+      //final String command = args[0];
+      // final int n = Integer.valueOf(args[1]);
+      // Initialize clients to ResourceManager and NodeManagers
+      Configuration myConf = new YarnConfiguration();
+
+      //conf.set("yarn.resourcemanager.hostname","114.212.87.91");
+      AMRMClient<AMRMClient.ContainerRequest> rmClient = AMRMClient.createAMRMClient();
+      rmClient.init(myConf);
+      rmClient.start();
+      // Register with ResourceManager
+      System.out.println("registerApplicationMaster ...");
+      rmClient.registerApplicationMaster("", 0, "");
+      System.out.println("registerApplicationMaster success!");
+
+
+      NMClient nmClient = NMClient.createNMClient();
+      nmClient.init(myConf);
+      nmClient.start();
+
+
+      // Priority for worker containers - priorities are intra-application
+      Priority priority = Records.newRecord(Priority.class);
+      priority.setPriority(0);
+
+      // Resource requirements for worker containers
+      Resource capability = Records.newRecord(Resource.class);
+      capability.setMemory(128);
+      capability.setVirtualCores(1);
+
+      // Make container requests to ResourceManager
+      for (int i = 0; i < n; ++i) {
+        AMRMClient.ContainerRequest containerAsk = new AMRMClient.ContainerRequest(capability, null, null, priority);
+        System.out.println("Making res-req " + i);
+        rmClient.addContainerRequest(containerAsk);
+      }
+
+      // Obtain allocated containers, launch and check for responses
+      int responseId = 0;
+      int completedContainers = 0;
+      while (completedContainers < n) {
+        //System.out.println("begin a container work !");
+        AllocateResponse response = rmClient.allocate(responseId++);
+        for (Container container : response.getAllocatedContainers()) {
+          // Launch container by create ContainerLaunchContext
+          ContainerLaunchContext ctx =
+                  Records.newRecord(ContainerLaunchContext.class);
+          ctx.setCommands(
+                  Collections.singletonList(
+                          command +
+                                  " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout" +
+                                  " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
+                  ));
+          System.out.println("Launching container " + container.getId());
+          nmClient.startContainer(container, ctx);
+        }
+        for (ContainerStatus status : response.getCompletedContainersStatuses()) {
+          ++completedContainers;
+          System.out.println("Completed container " + status.getContainerId());
+        }
+        //System.out.println("Do another container work !");
+        Thread.sleep(100);
+      }
+      System.out.println("Go to Finish am !");
+      // Un-register with ResourceManager
+      rmClient.unregisterApplicationMaster(
+              FinalApplicationStatus.SUCCEEDED, "", "");
+      System.out.println("Finish running am !");
+      return ;
+      //System.exit(0);
     } else {
       System.exit(1);
     }

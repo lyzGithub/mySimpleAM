@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.application;
+package com.application.UmAM;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
