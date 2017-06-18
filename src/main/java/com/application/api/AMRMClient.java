@@ -244,10 +244,17 @@ public abstract class AMRMClient<T extends AMRMClient.ContainerRequest> extends
 
 
   /*
+   *this function is to add the remote container request, add String disYarn1 disYarn2 to represent
+   * it .
+   */
+  public abstract AllocateResponse allocate(AllocateRequest allocateRequest ,String remoteName,float progressIndicator)
+          throws YarnException, IOException;
+
+  /*
    *this function is to provide a interface for client to add request directly
    *
    */
-  public abstract AllocateResponse addRequestAllocate(AllocateRequest allocateRequest, float progressIndicator)
+  public abstract AllocateResponse allocate(AllocateRequest allocateRequest, float progressIndicator)
           throws YarnException, IOException;
   /**
    * Request additional containers and receive new container allocations.
@@ -293,6 +300,8 @@ public abstract class AMRMClient<T extends AMRMClient.ContainerRequest> extends
    */
   public abstract void addContainerRequest(T req);
 
+  //this function is the one to add disYarn1 or disYarn2 ... container request
+  public abstract void addContainerRequest(T req,String sourceAddress);
   /**
    * Remove previous container request. The previous container request may have
    * already been sent to the ResourceManager. So even after the remove request

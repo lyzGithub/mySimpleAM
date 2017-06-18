@@ -207,9 +207,17 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
     return response;
   }
   @Override
-  public AllocateResponse addRequestAllocate(AllocateRequest allocateRequest,
+  public  AllocateResponse allocate(AllocateRequest allocateRequest ,String remoteName,float progressIndicator)
+          throws YarnException, IOException{
+
+    return null;
+  }
+  @Override
+  public AllocateResponse allocate(AllocateRequest allocateRequest,
                                              float progressIndicator)
           throws YarnException, IOException{
+    LOG.info("in amrmclient allocate2 !!");
+
     List<ResourceRequest> myAsk =
             new ArrayList<ResourceRequest>(allocateRequest.getAskList());
     List<ContainerId> myRelease = allocateRequest.getReleaseList();
@@ -229,6 +237,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
   @Override
   public AllocateResponse allocate(float progressIndicator)
       throws YarnException, IOException {
+    LOG.info("in amrmclient allocate1 !!");
     Preconditions.checkArgument(progressIndicator >= 0,
         "Progress indicator should not be negative");
     AllocateResponse allocateResponse = null;
@@ -271,6 +280,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
       }
 
       try {
+        LOG.info("going to using ams's allocate!!");
         allocateResponse = rmClient.allocate(allocateRequest);
       } catch (ApplicationMasterNotRegisteredException e) {
         LOG.warn("ApplicationMaster is out of sync with ResourceManager,"
@@ -393,6 +403,8 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
   
   @Override
   public synchronized void addContainerRequest(T req) {
+    LOG.info("in amrmclient addContainerRequest1 !!");
+
     Preconditions.checkArgument(req != null,
         "Resource request can not be null.");
     Set<String> dedupedRacks = new HashSet<String>();
@@ -451,6 +463,69 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
         req.getCapability(), req, req.getRelaxLocality(), req.getNodeLabelExpression());
   }
 
+
+  @Override
+  public synchronized void addContainerRequest(T req,String sourceAddress) {
+    LOG.info("in amrmclient addContainerRequest2 !!");
+
+    String addAhead = sourceAddress+":";//diaYarn1:*
+    Preconditions.checkArgument(req != null,
+            "Resource request can not be null.");
+    Set<String> dedupedRacks = new HashSet<String>();
+    if (req.getRacks() != null) {
+      dedupedRacks.addAll(req.getRacks());
+      if(req.getRacks().size() != dedupedRacks.size()) {
+        Joiner joiner = Joiner.on(',');
+        LOG.warn("ContainerRequest has duplicate racks: "
+                + joiner.join(req.getRacks()));
+      }
+    }
+    Set<String> inferredRacks = resolveRacks(req.getNodes());
+    inferredRacks.removeAll(dedupedRacks);
+
+    // check that specific and non-specific requests cannot be mixed within a
+    // priority
+    checkLocalityRelaxationConflict(req.getPriority(), ANY_LIST,
+            req.getRelaxLocality());
+    // check that specific rack cannot be mixed with specific node within a
+    // priority. If node and its rack are both specified then they must be
+    // in the same request.
+    // For explicitly requested racks, we set locality relaxation to true
+    checkLocalityRelaxationConflict(req.getPriority(), dedupedRacks, true);
+    checkLocalityRelaxationConflict(req.getPriority(), inferredRacks,
+            req.getRelaxLocality());
+    // check if the node label expression specified is valid
+    checkNodeLabelExpression(req);
+
+    if (req.getNodes() != null) {
+      HashSet<String> dedupedNodes = new HashSet<String>(req.getNodes());
+      if(dedupedNodes.size() != req.getNodes().size()) {
+        Joiner joiner = Joiner.on(',');
+        LOG.warn("ContainerRequest has duplicate nodes: "
+                + joiner.join(req.getNodes()));
+      }
+      for (String node : dedupedNodes) {
+        addResourceRequest(req.getPriority(), addAhead+node, req.getCapability(), req,
+                true, req.getNodeLabelExpression());
+      }
+    }
+
+    for (String rack : dedupedRacks) {
+      addResourceRequest(req.getPriority(), addAhead+rack, req.getCapability(), req,
+              true, req.getNodeLabelExpression());
+    }
+
+    // Ensure node requests are accompanied by requests for
+    // corresponding rack
+    for (String rack : inferredRacks) {
+      addResourceRequest(req.getPriority(), addAhead+rack, req.getCapability(), req,
+              req.getRelaxLocality(), req.getNodeLabelExpression());
+    }
+
+    // Off-switch
+    addResourceRequest(req.getPriority(), addAhead+ResourceRequest.ANY,
+            req.getCapability(), req, req.getRelaxLocality(), req.getNodeLabelExpression());
+  }
   @Override
   public synchronized void removeContainerRequest(T req) {
     Preconditions.checkArgument(req != null,
@@ -637,6 +712,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
       addResourceRequest(Priority priority, String resourceName,
                          Resource capability, T req, boolean relaxLocality,
                          String labelExpression) {
+    LOG.info("in add resource request, resourcename:"+resourceName);
     Map<String, TreeMap<Resource, ResourceRequestInfo>> remoteRequests =
       this.remoteRequestsTable.get(priority);
     if (remoteRequests == null) {

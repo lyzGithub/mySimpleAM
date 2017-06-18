@@ -24,11 +24,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
+import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
 import org.apache.hadoop.yarn.api.records.*;
-//import com.application.api.AMRMClient;
-import org.apache.hadoop.yarn.client.api.AMRMClient;
-import org.apache.hadoop.yarn.client.api.NMClient;
+import com.application.api.AMRMClient;
+import com.application.api.NMClient;
+//import org.apache.hadoop.yarn.client.api.AMRMClient;
+//import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.Records;
@@ -42,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 
 //import org.apache.hadoop.yarn.server.MiniYARNCluster;
 
-public class mySimpleAM implements Runnable{//
+public class mySimpleAM implements Runnable{
     private static final Log LOG = LogFactory
             .getLog(mySimpleAM.class);
 
@@ -62,6 +64,7 @@ public class mySimpleAM implements Runnable{//
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         try {
             this.tearDown();
         } catch (Exception e) {
@@ -192,7 +195,11 @@ public class mySimpleAM implements Runnable{//
 
     }
 
+    private static int vetex = 0;
 
+    public int getVetex(){
+        return vetex;
+    }
     // provide main method so this class can act as AM
     public static void main(String[] args) throws Exception {
 
@@ -201,7 +208,7 @@ public class mySimpleAM implements Runnable{//
         if (args[0].equals("success")) {
 
             final String command = "hello";
-            final int n = 2;
+            final int n = 4;
             //final String command = args[0];
             // final int n = Integer.valueOf(args[1]);
             // Initialize clients to ResourceManager and NodeManagers
@@ -212,10 +219,11 @@ public class mySimpleAM implements Runnable{//
             rmClient.init(myConf);
             rmClient.start();
             // Register with ResourceManager
+            LOG.info("registerApplicationMaster ...");
             System.out.println("registerApplicationMaster ...");
             rmClient.registerApplicationMaster("", 0, "");
-            System.out.println("registerApplicationMaster success!");
-
+            LOG.info("registerApplicationMaster success!");
+            Thread.sleep(2000);
 
             NMClient nmClient = NMClient.createNMClient();
             nmClient.init(myConf);
@@ -232,17 +240,28 @@ public class mySimpleAM implements Runnable{//
             capability.setVirtualCores(1);
 
             // Make container requests to ResourceManager
-            for (int i = 0; i < n; ++i) {
+
+            for(int i = 0; i<n; i++) {
                 AMRMClient.ContainerRequest containerAsk = new AMRMClient.ContainerRequest(capability, null, null, priority);
-                System.out.println("Making res-req " + i);
-                rmClient.addContainerRequest(containerAsk);
+                LOG.info("Making res-req " + (i));
+                System.out.println("Making res-req " + (i));
+                if((i%2) == 0) {
+                    LOG.info("in simple am add hdfs1");
+                    rmClient.addContainerRequest(containerAsk);//,"hdfs1");
+                }
+                else {
+                    rmClient.addContainerRequest(containerAsk);
+                }
             }
 
+            AllocateRequest allocateRequest = null;
+            //allocateRequest = AllocateRequest.newInstance();
             // Obtain allocated containers, launch and check for responses
             int responseId = 0;
             int completedContainers = 0;
-            while (completedContainers < n) {
+            while (completedContainers<n) {
                 //System.out.println("begin a container work !");
+
                 AllocateResponse response = rmClient.allocate(responseId++);
                 for (Container container : response.getAllocatedContainers()) {
                     // Launch container by create ContainerLaunchContext
@@ -254,22 +273,30 @@ public class mySimpleAM implements Runnable{//
                                             " 1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout" +
                                             " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                             ));
+                    LOG.info("Launching container " + container.getId());
                     System.out.println("Launching container " + container.getId());
                     nmClient.startContainer(container, ctx);
                 }
                 for (ContainerStatus status : response.getCompletedContainersStatuses()) {
-                    ++completedContainers;
+                    LOG.info("Completed container " + status.getContainerId());
                     System.out.println("Completed container " + status.getContainerId());
+                    completedContainers++;
+                    vetex = completedContainers;
                 }
                 //System.out.println("Do another container work !");
-                Thread.sleep(100);
+                Thread.sleep(1000);
+                if(responseId>10){
+                    LOG.error("response container is error  !");
+                    break;
+                }
             }
-            System.out.println("Go to Finish am !");
+            LOG.info("Go to Finish am !");
+            System.out.println("Go to Finish am !" );
             // Un-register with ResourceManager
             rmClient.unregisterApplicationMaster(
                     FinalApplicationStatus.SUCCEEDED, "", "");
-            System.out.println("Finish running am !");
-
+            LOG.info("Finish running am !");
+            System.out.println("Finish running am !" );
             System.exit(0);
         } else {
             System.exit(1);
