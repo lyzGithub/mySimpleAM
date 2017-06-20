@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-package com.application;
+package com.application.myApp;
 
-import com.application.UmAM.MiniYARNCluster;
-import com.application.UmAM.UnmanagedAMLauncher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -29,133 +27,42 @@ import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
 import org.apache.hadoop.yarn.api.records.*;
 import com.application.api.AMRMClient;
 import com.application.api.NMClient;
-//import org.apache.hadoop.yarn.client.api.AMRMClient;
-//import org.apache.hadoop.yarn.client.api.NMClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
-import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.Records;
-import org.junit.Assert;
 
-import java.io.*;
+import java.io.File;
 import java.net.URL;
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
-
-//import org.apache.hadoop.yarn.server.MiniYARNCluster;
 
 public class mySimpleAM implements Runnable{
+
     private static final Log LOG = LogFactory
             .getLog(mySimpleAM.class);
 
-    protected static MiniYARNCluster yarnCluster = null;
     protected static Configuration conf = new YarnConfiguration();
+    public mySimpleAM(){
+
+    }
+    public mySimpleAM(Configuration conf){
+        this.conf = conf;
+    }
     public void run() {
 
-        try {
-            this.setup();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         try {
             this.testUMALauncher();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        try {
-            this.tearDown();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("finish thread");
+        LOG.info("finish thread in mySimpleAM");
     }
 
-    //this setup is set up the running env for application master
-    //@BeforeClass
-    public static void setup() throws InterruptedException, IOException {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!stop a while in setup!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        //Thread.sleep(200);
-        LOG.info("Starting up YARN cluster");
-        conf.setInt(YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_MB, 128);
-        if (yarnCluster == null) {
-            //System.out.println(mySimpleAM.class.getSimpleName());//mySimpleAM
 
-            yarnCluster = new MiniYARNCluster(
-                    mySimpleAM.class.getSimpleName(), 1, 1, 1);
-            yarnCluster.init(conf);
-            yarnCluster.start();
-            //get the address
-            Configuration yarnClusterConfig = yarnCluster.getConfig();
-            LOG.info("MiniYARN ResourceManager published address: " +
-                    yarnClusterConfig.get(YarnConfiguration.RM_ADDRESS));
-            LOG.info("MiniYARN ResourceManager published web address: " +
-                    yarnClusterConfig.get(YarnConfiguration.RM_WEBAPP_ADDRESS));
-            String webapp = yarnClusterConfig.get(YarnConfiguration.RM_WEBAPP_ADDRESS);
-            assertTrue("Web app address still unbound to a host at " + webapp,
-                    !webapp.startsWith("0.0.0.0"));
-            LOG.info("Yarn webapp is at "+ webapp);
-            URL url = Thread.currentThread().getContextClassLoader()
-                    .getResource("yarn-site.xml");
-            if (url == null) {
-                throw new RuntimeException(
-                        "Could not find 'yarn-site.xml' dummy file in classpath");
-            }
-            //write the document to a buffer (not directly to the file, as that
-            //can cause the file being written to get read -which will then fail.
-            ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-            yarnClusterConfig.writeXml(bytesOut);
-            bytesOut.close();
-            //write the bytes to the file in the classpath
-            OutputStream os = new FileOutputStream(new File(url.getPath()));
-            os.write(bytesOut.toByteArray());
-            os.close();
-        }
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            LOG.info("setup thread sleep interrupted. message=" + e.getMessage());
-        }
-    }
 
-    //@AfterClass
-    public static void tearDown() throws IOException, Exception {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!stop a while in tearDown!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        //Thread.sleep(200);
-        if (yarnCluster != null) {
-            try {
-                System.out.println("stopping a yarncluster!");
-                yarnCluster.stop();
-                System.out.println("stop a yarnclusterff!");
-            } finally {
-                yarnCluster = null;
-            }
-        }
-    }
-
-    private static String getTestRuntimeClasspath() {
-        LOG.info("Trying to generate classpath for app master from current thread's classpath");
-        String envClassPath = "";
-        String cp = System.getProperty("java.class.path");
-        if (cp != null) {
-            envClassPath += cp.trim() + File.pathSeparator;
-        }
-        // yarn-site.xml at this location contains proper config for mini cluster
-        ClassLoader thisClassLoader = Thread.currentThread()
-                .getContextClassLoader();
-        URL url = thisClassLoader.getResource("yarn-site.xml");
-        envClassPath += new File(url.getFile()).getParent();
-        return envClassPath;
-    }
-
-    //@Test(timeout=30000)
     public void testUMALauncher() throws Exception {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!stop a while in testUMALauncher!!!!!!!!!!!!!!!!!!!!!!!!!!");
-       // Thread.sleep(200);
+        LOG.info("!!!!!!!!!!!!!!!!!!!!!stop a while in testUMALauncher!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         String classpath = getTestRuntimeClasspath();
-        //System.out.println("classpath:"+classpath);
         String javaHome = System.getenv("JAVA_HOME");
         if (javaHome == null) {
             LOG.fatal("JAVA_HOME not defined. Test not running.");
@@ -174,24 +81,13 @@ public class mySimpleAM implements Runnable{
 
         LOG.info("Initializing Launcher");
         UnmanagedAMLauncher launcher =
-                new UnmanagedAMLauncher(new Configuration(yarnCluster.getConfig())) {
-                    public void launchAM(ApplicationAttemptId attemptId)
-                            throws IOException, YarnException {
-                        YarnApplicationAttemptState attemptState =
-                                rmClient.getApplicationAttemptReport(attemptId)
-                                        .getYarnApplicationAttemptState();
-                        Assert.assertTrue(attemptState
-                                .equals(YarnApplicationAttemptState.LAUNCHED));
-                        super.launchAM(attemptId);
-                    }
-                };
+                new UnmanagedAMLauncher();
         boolean initSuccess = launcher.init(args);
-        Assert.assertTrue(initSuccess);
         LOG.info("Running Launcher");
         boolean result = launcher.run();
 
         LOG.info("Launcher run completed. Result=" + result);
-        Assert.assertTrue(result);
+
 
     }
 
@@ -203,7 +99,7 @@ public class mySimpleAM implements Runnable{
     // provide main method so this class can act as AM
     public static void main(String[] args) throws Exception {
 
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!stop a while in main!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        LOG.info("!!!!!!!!!!!!!!!!!!!!!stop a while in main!!!!!!!!!!!!!!!!!!!!!!!!!!");
        // Thread.sleep(200);
         if (args[0].equals("success")) {
 
@@ -213,14 +109,15 @@ public class mySimpleAM implements Runnable{
             // final int n = Integer.valueOf(args[1]);
             // Initialize clients to ResourceManager and NodeManagers
             Configuration myConf = new YarnConfiguration();
-
+            LOG.info("set the yarn address !!! ");
+            myConf.set("yarn.resourcemanager.address","0.0.0.0:8032");
+            myConf.set("yarn.resourcemanager.scheduler.address","0.0.0.0:8030");
             //conf.set("yarn.resourcemanager.hostname","114.212.87.91");
             AMRMClient<AMRMClient.ContainerRequest> rmClient = AMRMClient.createAMRMClient();
             rmClient.init(myConf);
             rmClient.start();
             // Register with ResourceManager
             LOG.info("registerApplicationMaster ...");
-            System.out.println("registerApplicationMaster ...");
             rmClient.registerApplicationMaster("", 0, "");
             LOG.info("registerApplicationMaster success!");
             Thread.sleep(2000);
@@ -244,12 +141,13 @@ public class mySimpleAM implements Runnable{
             for(int i = 0; i<n; i++) {
                 AMRMClient.ContainerRequest containerAsk = new AMRMClient.ContainerRequest(capability, null, null, priority);
                 LOG.info("Making res-req " + (i));
-                System.out.println("Making res-req " + (i));
+
                 if((i%2) == 0) {
                     LOG.info("in simple am add hdfs1");
                     rmClient.addContainerRequest(containerAsk);//,"hdfs1");
                 }
                 else {
+                    LOG.info("in simple am add local");
                     rmClient.addContainerRequest(containerAsk);
                 }
             }
@@ -260,8 +158,7 @@ public class mySimpleAM implements Runnable{
             int responseId = 0;
             int completedContainers = 0;
             while (completedContainers<n) {
-                //System.out.println("begin a container work !");
-
+                LOG.info("begin a container work !");
                 AllocateResponse response = rmClient.allocate(responseId++);
                 for (Container container : response.getAllocatedContainers()) {
                     // Launch container by create ContainerLaunchContext
@@ -274,18 +171,15 @@ public class mySimpleAM implements Runnable{
                                             " 2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr"
                             ));
                     LOG.info("Launching container " + container.getId());
-                    System.out.println("Launching container " + container.getId());
                     nmClient.startContainer(container, ctx);
                 }
                 for (ContainerStatus status : response.getCompletedContainersStatuses()) {
                     LOG.info("Completed container " + status.getContainerId());
-                    System.out.println("Completed container " + status.getContainerId());
                     completedContainers++;
                     vetex = completedContainers;
                 }
-                //System.out.println("Do another container work !");
                 Thread.sleep(1000);
-                if(responseId>10){
+                if(responseId>60){
                     LOG.error("response container is error  !");
                     break;
                 }
@@ -301,5 +195,19 @@ public class mySimpleAM implements Runnable{
         } else {
             System.exit(1);
         }
+    }
+    private static String getTestRuntimeClasspath() {
+        LOG.info("Trying to generate classpath for app master from current thread's classpath");
+        String envClassPath = "";
+        String cp = System.getProperty("java.class.path");
+        if (cp != null) {
+            envClassPath += cp.trim() + File.pathSeparator;
+        }
+        // yarn-site.xml at this location contains proper config for mini cluster
+        ClassLoader thisClassLoader = Thread.currentThread()
+                .getContextClassLoader();
+        URL url = thisClassLoader.getResource("yarn-site.xml");
+        envClassPath += new File(url.getFile()).getParent();
+        return envClassPath;
     }
 }

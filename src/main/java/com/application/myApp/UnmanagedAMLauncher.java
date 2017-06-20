@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.application.UmAM;
+package com.application.myApp;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
@@ -107,6 +107,7 @@ public class UnmanagedAMLauncher {
     }
 
     private void printUsage(Options opts) {
+        //printUsage
         new HelpFormatter().printHelp("Client", opts);
     }
 
@@ -136,11 +137,11 @@ public class UnmanagedAMLauncher {
             return false;
         }
 
-        appName = cliParser.getOptionValue("appname", "UnmanagedAM");
+        appName = cliParser.getOptionValue("appname", "UnmanagedAMNew");
         amPriority = Integer.parseInt(cliParser.getOptionValue("priority", "0"));
         amQueue = cliParser.getOptionValue("queue", "default");
         classpath = cliParser.getOptionValue("classpath", null);
-        //System.out.println("classpath2:"+classpath);
+        LOG.info("classpath real:"+classpath);
         amCmd = cliParser.getOptionValue("cmd");
         if (amCmd == null) {
             printUsage(opts);
@@ -149,10 +150,94 @@ public class UnmanagedAMLauncher {
         }
 
         YarnConfiguration yarnConf = new YarnConfiguration(conf);
+        LOG.info("ste the yarn address !!! ");
+        yarnConf.set("yarn.resourcemanager.address","0.0.0.0:8032");
+
         rmClient = YarnClient.createYarnClient();
         rmClient.init(yarnConf);
 
         return true;
+    }
+
+
+    public boolean run() throws IOException, YarnException {
+        LOG.info("Starting Client");
+
+        // Connect to ResourceManager
+        rmClient.start();
+        try {
+            // Create launch context for app master
+            LOG.info("Setting up application submission context for ASM");
+            ApplicationSubmissionContext appContext = rmClient.createApplication()
+                    .getApplicationSubmissionContext();
+            ApplicationId appId = appContext.getApplicationId();
+
+            // set the application name
+            appContext.setApplicationName(appName);
+
+            // Set the priority for the application master
+            Priority pri = Records.newRecord(Priority.class);
+            pri.setPriority(amPriority);
+            appContext.setPriority(pri);
+
+            // Set the queue to which this application is to be submitted in the RM
+            appContext.setQueue(amQueue);
+
+            // Set up the container launch context for the application master
+            ContainerLaunchContext amContainer = Records
+                    .newRecord(ContainerLaunchContext.class);
+            appContext.setAMContainerSpec(amContainer);
+
+            // unmanaged AM
+            appContext.setUnmanagedAM(true);
+            LOG.info("Setting unmanaged AM");
+
+            // Submit the application to the applications manager
+            LOG.info("Submitting application to ASM");
+            rmClient.submitApplication(appContext);
+
+            ApplicationReport appReport =
+                    monitorApplication(appId, EnumSet.of(YarnApplicationState.ACCEPTED,
+                            YarnApplicationState.KILLED, YarnApplicationState.FAILED,
+                            YarnApplicationState.FINISHED));
+
+            if (appReport.getYarnApplicationState() == YarnApplicationState.ACCEPTED) {
+                // Monitor the application attempt to wait for launch state
+                ApplicationAttemptReport attemptReport =
+                        monitorCurrentAppAttempt(appId,
+                                YarnApplicationAttemptState.LAUNCHED);
+                ApplicationAttemptId attemptId =
+                        attemptReport.getApplicationAttemptId();
+                LOG.info("Launching AM with application attempt id " + attemptId);
+                // launch AM
+                launchAM(attemptId);
+                // Monitor the application for end state
+                appReport =
+                        monitorApplication(appId, EnumSet.of(YarnApplicationState.KILLED,
+                                YarnApplicationState.FAILED, YarnApplicationState.FINISHED));
+            }
+
+            YarnApplicationState appState = appReport.getYarnApplicationState();
+            FinalApplicationStatus appStatus = appReport.getFinalApplicationStatus();
+
+            LOG.info("App ended with state: " + appReport.getYarnApplicationState()
+                    + " and status: " + appStatus);
+
+            boolean success;
+            if (YarnApplicationState.FINISHED == appState
+                    && FinalApplicationStatus.SUCCEEDED == appStatus) {
+                LOG.info("Application has completed successfully.");
+                success = true;
+            } else {
+                LOG.info("Application did finished unsuccessfully." + " YarnState="
+                        + appState.toString() + ", FinalStatus=" + appStatus.toString());
+                success = false;
+            }
+
+            return success;
+        } finally {
+            rmClient.stop();
+        }
     }
 
     public void launchAM(ApplicationAttemptId attemptId)
@@ -195,6 +280,7 @@ public class UnmanagedAMLauncher {
         if(!setClasspath && classpath!=null) {
             envAMList.add("CLASSPATH="+classpath);
         }
+        LOG.info("classpath 3 :" +classpath);
         ContainerId containerId = ContainerId.newContainerId(attemptId, 0);
 
         String hostname = InetAddress.getLocalHost().getHostName();
@@ -280,87 +366,6 @@ public class UnmanagedAMLauncher {
         }
         amProc.destroy();
     }
-
-    public boolean run() throws IOException, YarnException {
-        LOG.info("Starting Client");
-
-        // Connect to ResourceManager
-        rmClient.start();
-        try {
-            // Create launch context for app master
-            LOG.info("Setting up application submission context for ASM");
-            ApplicationSubmissionContext appContext = rmClient.createApplication()
-                    .getApplicationSubmissionContext();
-            ApplicationId appId = appContext.getApplicationId();
-
-            // set the application name
-            appContext.setApplicationName(appName);
-
-            // Set the priority for the application master
-            Priority pri = Records.newRecord(Priority.class);
-            pri.setPriority(amPriority);
-            appContext.setPriority(pri);
-
-            // Set the queue to which this application is to be submitted in the RM
-            appContext.setQueue(amQueue);
-
-            // Set up the container launch context for the application master
-            ContainerLaunchContext amContainer = Records
-                    .newRecord(ContainerLaunchContext.class);
-            appContext.setAMContainerSpec(amContainer);
-
-            // unmanaged AM
-            appContext.setUnmanagedAM(true);
-            LOG.info("Setting unmanaged AM");
-
-            // Submit the application to the applications manager
-            LOG.info("Submitting application to ASM");
-            rmClient.submitApplication(appContext);
-
-            ApplicationReport appReport =
-                    monitorApplication(appId, EnumSet.of(YarnApplicationState.ACCEPTED,
-                            YarnApplicationState.KILLED, YarnApplicationState.FAILED,
-                            YarnApplicationState.FINISHED));
-
-            if (appReport.getYarnApplicationState() == YarnApplicationState.ACCEPTED) {
-                // Monitor the application attempt to wait for launch state
-                ApplicationAttemptReport attemptReport =
-                        monitorCurrentAppAttempt(appId,
-                                YarnApplicationAttemptState.LAUNCHED);
-                ApplicationAttemptId attemptId =
-                        attemptReport.getApplicationAttemptId();
-                LOG.info("Launching AM with application attempt id " + attemptId);
-                // launch AM
-                launchAM(attemptId);
-                // Monitor the application for end state
-                appReport =
-                        monitorApplication(appId, EnumSet.of(YarnApplicationState.KILLED,
-                                YarnApplicationState.FAILED, YarnApplicationState.FINISHED));
-            }
-
-            YarnApplicationState appState = appReport.getYarnApplicationState();
-            FinalApplicationStatus appStatus = appReport.getFinalApplicationStatus();
-
-            LOG.info("App ended with state: " + appReport.getYarnApplicationState()
-                    + " and status: " + appStatus);
-
-            boolean success;
-            if (YarnApplicationState.FINISHED == appState
-                    && FinalApplicationStatus.SUCCEEDED == appStatus) {
-                LOG.info("Application has completed successfully.");
-                success = true;
-            } else {
-                LOG.info("Application did finished unsuccessfully." + " YarnState="
-                        + appState.toString() + ", FinalStatus=" + appStatus.toString());
-                success = false;
-            }
-
-            return success;
-        } finally {
-            rmClient.stop();
-        }
-    }
-
     private ApplicationAttemptReport monitorCurrentAppAttempt(
             ApplicationId appId, YarnApplicationAttemptState attemptState)
             throws YarnException, IOException {
