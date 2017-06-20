@@ -83,7 +83,7 @@ public class MyAllocateResponse implements Serializable{
 
 
     public   List<NodeReport> getUpdatedNodes(){
-        return th
+        return this.myUpdateNodes.getUpdateNodes();
     }
 
     public  void setUpdatedNodes(final List<NodeReport> updatedNodes);
