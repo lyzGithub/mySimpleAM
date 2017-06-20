@@ -30,6 +30,37 @@ public class MyAllocateResponse implements Serializable{
         response.setNMTokens(nmTokens);
         return response;
     }
+
+    public static MyAllocateResponse newInstance(int responseId,
+                                               List<ContainerStatus> completedContainers,
+                                               List<Container> allocatedContainers, List<NodeReport> updatedNodes,
+                                               Resource availResources, AMCommand command, int numClusterNodes,
+                                               PreemptionMessage preempt, List<NMToken> nmTokens,
+                                               List<ContainerResourceIncrease> increasedContainers,
+                                               List<ContainerResourceDecrease> decreasedContainers) {
+        MyAllocateResponse response = newInstance(responseId, completedContainers,
+                allocatedContainers, updatedNodes, availResources, command,
+                numClusterNodes, preempt, nmTokens);
+        response.setIncreasedContainers(increasedContainers);
+        response.setDecreasedContainers(decreasedContainers);
+        return response;
+    }
+
+
+    public static MyAllocateResponse newInstance(int responseId,
+                                               List<ContainerStatus> completedContainers,
+                                               List<Container> allocatedContainers, List<NodeReport> updatedNodes,
+                                               Resource availResources, AMCommand command, int numClusterNodes,
+                                               PreemptionMessage preempt, List<NMToken> nmTokens, Token amRMToken,
+                                               List<ContainerResourceIncrease> increasedContainers,
+                                               List<ContainerResourceDecrease> decreasedContainers) {
+        MyAllocateResponse response =
+                newInstance(responseId, completedContainers, allocatedContainers,
+                        updatedNodes, availResources, command, numClusterNodes, preempt,
+                        nmTokens, increasedContainers, decreasedContainers);
+        response.setAMRMToken(amRMToken);
+        return response;
+    }
     private int  responseId;
     private int numClusterNodes;
     private MyResource availResources;
@@ -39,6 +70,8 @@ public class MyAllocateResponse implements Serializable{
     private MyAllocatedContainers myAllocatedContainers;
     private MyUpdateNodes myUpdateNodes;
     private MyNMTokenList myNMTokenList;
+    private MyToken myAmRmToken;
+
 
     public  AMCommand getAMCommand(){
         return this.amCommand;
@@ -86,42 +119,74 @@ public class MyAllocateResponse implements Serializable{
         return this.myUpdateNodes.getUpdateNodes();
     }
 
-    public  void setUpdatedNodes(final List<NodeReport> updatedNodes);
+    public  void setUpdatedNodes(final List<NodeReport> updatedNodes){
+        this.myUpdateNodes = new MyUpdateNodes(updatedNodes);
+    }
 
 
-    public  int getNumClusterNodes();
+    public  int getNumClusterNodes(){
+        return this.numClusterNodes;
+    }
 
-    public  void setNumClusterNodes(int numNodes);
-
-
-    public  PreemptionMessage getPreemptionMessage();
-
-
-    public  void setPreemptionMessage(PreemptionMessage request);
+    public  void setNumClusterNodes(int numNodes){
+        this.numClusterNodes = numNodes;
+    }
 
 
-    public  List<NMToken> getNMTokens();
+    public  PreemptionMessage getPreemptionMessage(){
+        return myPreemptionMessage.tansBack();
+    }
 
 
-    public  void setNMTokens(List<NMToken> nmTokens);
+    public  void setPreemptionMessage(PreemptionMessage request){
+        this.myPreemptionMessage = MyPreemptionMessage.newInstance(
+                request.getStrictContract(),
+                request.getContract());
+    }
 
 
-    public  List<ContainerResourceIncrease> getIncreasedContainers();
+    public  List<NMToken> getNMTokens(){
+        return this.myNMTokenList.getNMToken();
+    }
+
+
+    public  void setNMTokens(List<NMToken> nmTokens){
+        this.myNMTokenList = new MyNMTokenList(nmTokens);
+    }
+
+
+    public  List<ContainerResourceIncrease> getIncreasedContainers(){
+
+    }
 
 
     public  void setIncreasedContainers(
-            List<ContainerResourceIncrease> increasedContainers);
+            List<ContainerResourceIncrease> increasedContainers){
 
-    public  List<ContainerResourceDecrease> getDecreasedContainers();
+    }
+
+    public  List<ContainerResourceDecrease> getDecreasedContainers(){
+
+    }
 
 
     public  void setDecreasedContainers(
-            List<ContainerResourceDecrease> decreasedContainers);
+            List<ContainerResourceDecrease> decreasedContainers){
+
+    }
 
 
-    public  Token getAMRMToken();
+    public  Token getAMRMToken(){
+        return this.myAmRmToken.tansBack();
+    }
 
-    public  void setAMRMToken(Token amRMToken);
+    public  void setAMRMToken(Token amRMToken){
+        this.myAmRmToken = MyToken.newInstance(
+                amRMToken.getIdentifier().array(),
+                amRMToken.getKind(),
+                amRMToken.getPassword().array(),
+                amRMToken.getService());
+    }
 
 
     private class MyNMTokenList {
