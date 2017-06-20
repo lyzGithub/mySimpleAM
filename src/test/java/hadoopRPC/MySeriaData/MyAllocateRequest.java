@@ -58,93 +58,7 @@ public class MyAllocateRequest implements Serializable {
         }
     }
 
-    public class MyContainerID implements  Serializable{
-        private long containerID;
-        private MyApplicationAttemptID appAttID;
-        private class MyApplicationAttemptID{
-            private long ClusterTimeStamp;
-            private int appAttId;
-            private int appId;
-            public MyApplicationAttemptID(ApplicationAttemptId appAttId){
-                this.ClusterTimeStamp = appAttId.getApplicationId().getClusterTimestamp();
-                this.appId = appAttId.getApplicationId().getId();
-                this.appAttId = appAttId.getAttemptId();
-            }
-            public int getAppAttId(){
-                return this.appAttId;
-            }
-            public long getClusterTimeStamp(){
-                return this.ClusterTimeStamp;
-            }
-            public int getAppId(){
-                return this.appId;
-            }
-        }
-        public MyContainerID(ContainerId cID){
-            this.containerID = cID.getContainerId();
-            this.appAttID = new MyApplicationAttemptID(cID.getApplicationAttemptId());
-        }
 
-        public ContainerId tansBack(){
-            return ContainerId.newContainerId(ApplicationAttemptId.newInstance(
-                    ApplicationId.newInstance(this.appAttID.ClusterTimeStamp,this.appAttID.appId), this.appAttID.appAttId),
-                    this.containerID);
-        }
-    }
-
-    public class MyResourceRequest implements Serializable{
-        private int priority;
-        private String resource_name;
-        private int num_containers;
-        private boolean relax_locality;
-        private Capability capability;
-        private class Capability implements Serializable{
-            private int memory;
-            private int virtual_cores;
-            public Capability(int mem, int vc){
-                this.memory = mem;
-                this.virtual_cores = vc;
-            }
-            public int  getMem(){
-                return this.memory;
-            }
-            public int getVc(){
-                return this.virtual_cores;
-            }
-        }
-        public MyResourceRequest(ResourceRequest request){
-            this.capability = new Capability(request.getCapability().getMemory(),
-                    request.getCapability().getVirtualCores());
-            this.resource_name = request.getResourceName();
-            this.relax_locality = request.getRelaxLocality();
-            this.priority = request.getPriority().getPriority();
-            this.num_containers = request.getNumContainers();
-        }
-        public int getPriority(){
-            return this.priority;
-        }
-        public String getResourceName(){
-            return this.resource_name;
-        }
-        public int getNumContainer(){
-            return this.num_containers;
-        }
-        public boolean getRelaxLocality(){
-            return this.relax_locality;
-        }
-        public int getCapabilityMem(){
-            return this.capability.getMem();
-        }
-        public int getCapabilityVc(){
-            return this.capability.getVc();
-        }
-        public ResourceRequest transBack(){
-            ResourceRequest rrt =
-                    ResourceRequest.newInstance(Priority.newInstance(this.priority),this.resource_name,
-                            Resource.newInstance(this.capability.getMem(),this.capability.getMem()),this.num_containers);
-            return rrt;
-        }
-    }
 
     private class MyAskList implements Serializable{
         List<MyResourceRequest> myAskLit;
@@ -166,6 +80,7 @@ public class MyAllocateRequest implements Serializable {
         return newInstance(responseID, appProgress, resourceAsk,
                 containersToBeReleased, resourceBlacklistRequest, null);
     }
+
 
     public static MyAllocateRequest newInstance(int responseID, float appProgress,
                                                 List<ResourceRequest> resourceAsk,

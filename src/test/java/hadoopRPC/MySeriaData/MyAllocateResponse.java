@@ -28,5 +28,8 @@ public class MyAllocateResponse implements Serializable{
         response.setNMTokens(nmTokens);
         return response;
     }
-    
+    private int  responseId;
+    private int numClusterNodes;
+
+
 }
