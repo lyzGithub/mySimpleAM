@@ -15,10 +15,10 @@ public class MyResourceRequest implements Serializable {
     private String resource_name;
     private int num_containers;
     private boolean relax_locality;
-    private Capability capability;
+    private MyCapability capability;
 
     public MyResourceRequest(ResourceRequest request){
-        this.capability = new Capability(request.getCapability().getMemory(),
+        this.capability = new MyCapability(request.getCapability().getMemory(),
                 request.getCapability().getVirtualCores());
         this.resource_name = request.getResourceName();
         this.relax_locality = request.getRelaxLocality();
