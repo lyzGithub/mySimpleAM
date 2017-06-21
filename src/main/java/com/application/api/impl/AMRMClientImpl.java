@@ -237,7 +237,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
   @Override
   public AllocateResponse allocate(float progressIndicator)
       throws YarnException, IOException {
-    LOG.info("in amrmclient allocate1 !!");
+    //LOG.info("in amrmclient allocate1 !!");
     Preconditions.checkArgument(progressIndicator >= 0,
         "Progress indicator should not be negative");
     AllocateResponse allocateResponse = null;
@@ -280,7 +280,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
       }
 
       try {
-        LOG.info("going to using ams's allocate!!");
+       // LOG.info("going to using ams's allocate!!");
         allocateResponse = rmClient.allocate(allocateRequest);
       } catch (ApplicationMasterNotRegisteredException e) {
         LOG.warn("ApplicationMaster is out of sync with ResourceManager,"
@@ -369,6 +369,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
       getNMTokenCache().setToken(nodeId, token.getToken());
     }
   }
+
 
   @Override
   public void unregisterApplicationMaster(FinalApplicationStatus appStatus,

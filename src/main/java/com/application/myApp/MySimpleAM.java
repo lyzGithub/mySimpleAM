@@ -1,23 +1,7 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package com.application.myApp;
 
+import com.application.UmAm.UnmanagedAMLauncher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -35,16 +19,16 @@ import java.net.URL;
 import java.util.Collections;
 
 
-public class mySimpleAM implements Runnable{
+public class MySimpleAM implements Runnable{
 
     private static final Log LOG = LogFactory
-            .getLog(mySimpleAM.class);
+            .getLog(MySimpleAM.class);
 
     protected static Configuration conf = new YarnConfiguration();
-    public mySimpleAM(){
+    public MySimpleAM(){
 
     }
-    public mySimpleAM(Configuration conf){
+    public MySimpleAM(Configuration conf){
         this.conf = conf;
     }
     public void run() {
@@ -76,7 +60,7 @@ public class mySimpleAM implements Runnable{
                 "--cmd",
                 javaHome
                         + "/bin/java -Xmx512m "
-                        + mySimpleAM.class.getCanonicalName()
+                        + MySimpleAM.class.getCanonicalName()
                         + " success" };
 
         LOG.info("Initializing Launcher");
@@ -100,7 +84,7 @@ public class mySimpleAM implements Runnable{
     public static void main(String[] args) throws Exception {
 
         LOG.info("!!!!!!!!!!!!!!!!!!!!!stop a while in main!!!!!!!!!!!!!!!!!!!!!!!!!!");
-       // Thread.sleep(200);
+        // Thread.sleep(200);
         if (args[0].equals("success")) {
 
             final String command = "hello";
@@ -144,7 +128,7 @@ public class mySimpleAM implements Runnable{
 
                 if((i%2) == 0) {
                     LOG.info("in simple am add hdfs1");
-                    rmClient.addContainerRequest(containerAsk);//,"hdfs1");
+                    rmClient.addContainerRequest(containerAsk);//"hdfs1");
                 }
                 else {
                     LOG.info("in simple am add local");
@@ -160,6 +144,7 @@ public class mySimpleAM implements Runnable{
             while (completedContainers<n) {
                 LOG.info("begin a container work !");
                 AllocateResponse response = rmClient.allocate(responseId++);
+                //nmClient.setNMTokenCache(response.getNMTokens());
                 for (Container container : response.getAllocatedContainers()) {
                     // Launch container by create ContainerLaunchContext
                     ContainerLaunchContext ctx =

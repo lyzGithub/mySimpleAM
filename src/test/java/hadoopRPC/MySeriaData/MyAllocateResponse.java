@@ -72,6 +72,8 @@ public class MyAllocateResponse implements Serializable{
     private MyNMTokenList myNMTokenList;
     private MyToken myAmRmToken;
 
+    private MyContainerResourceIncreaseList myContainerResourceIncreaseList;
+    private MyContainerResourceDecreaseList myContainerResourceDecreaseList;
 
     public  AMCommand getAMCommand(){
         return this.amCommand;
@@ -88,39 +90,45 @@ public class MyAllocateResponse implements Serializable{
 
    
     public  List<Container> getAllocatedContainers(){
-        return this.myAllocatedContainers.getAllocatedContainers();
+
+        return (this.myAllocatedContainers == null) ? null:this.myAllocatedContainers.getAllocatedContainers();
     }
     public  void setAllocatedContainers(List<Container> containers){
-        this.myAllocatedContainers = new MyAllocatedContainers(containers);
+        if(containers == null) {
+            this.myAllocatedContainers = null;
+        }
+        else{
+            this.myAllocatedContainers = new MyAllocatedContainers(containers);
+        }
     }
 
 
     public  Resource getAvailableResources(){
-        return this.availResources.tansBack();
+        return  (this.availResources == null) ? null:this.availResources.tansBack();
     }
 
 
     public  void setAvailableResources(Resource limit){
-        this.availResources = MyResource.newInstance(limit.getMemory(),limit.getVirtualCores());
+        this.availResources = (limit == null) ? null:MyResource.newInstance(limit.getMemory(),limit.getVirtualCores());
     }
 
 
     public  List<ContainerStatus> getCompletedContainersStatuses(){
-        return this.myCompletedContainers.getMyContainerStatusList();
+        return (this.myCompletedContainers == null) ? null:this.myCompletedContainers.getMyContainerStatusList();
     }
 
 
     public  void setCompletedContainersStatuses(List<ContainerStatus> containers){
-        this.myCompletedContainers = new MyCompletedContainers(containers);
+        this.myCompletedContainers = (containers == null) ? null:new MyCompletedContainers(containers);
     }
 
 
     public   List<NodeReport> getUpdatedNodes(){
-        return this.myUpdateNodes.getUpdateNodes();
+        return (this.myUpdateNodes == null) ? null:this.myUpdateNodes.getUpdateNodes();
     }
 
     public  void setUpdatedNodes(final List<NodeReport> updatedNodes){
-        this.myUpdateNodes = new MyUpdateNodes(updatedNodes);
+        this.myUpdateNodes = (updatedNodes == null)?null:new MyUpdateNodes(updatedNodes);
     }
 
 
@@ -134,62 +142,111 @@ public class MyAllocateResponse implements Serializable{
 
 
     public  PreemptionMessage getPreemptionMessage(){
-        return myPreemptionMessage.tansBack();
+        return (this.myPreemptionMessage == null)?null:myPreemptionMessage.tansBack();
     }
 
 
     public  void setPreemptionMessage(PreemptionMessage request){
-        this.myPreemptionMessage = MyPreemptionMessage.newInstance(
+        this.myPreemptionMessage = (request == null)?null:MyPreemptionMessage.newInstance(
                 request.getStrictContract(),
                 request.getContract());
     }
 
 
     public  List<NMToken> getNMTokens(){
-        return this.myNMTokenList.getNMToken();
+        return (this.myNMTokenList == null)?null:this.myNMTokenList.getNMToken();
     }
 
 
     public  void setNMTokens(List<NMToken> nmTokens){
-        this.myNMTokenList = new MyNMTokenList(nmTokens);
+        this.myNMTokenList = (nmTokens == null)?null:new MyNMTokenList(nmTokens);
     }
 
 
     public  List<ContainerResourceIncrease> getIncreasedContainers(){
-
+        return (this.myContainerResourceIncreaseList == null)?null:this.myContainerResourceIncreaseList.getIncreasedContainers();
     }
 
 
     public  void setIncreasedContainers(
             List<ContainerResourceIncrease> increasedContainers){
-
+        this.myContainerResourceIncreaseList = (increasedContainers == null)?null:new MyContainerResourceIncreaseList(increasedContainers);
     }
 
     public  List<ContainerResourceDecrease> getDecreasedContainers(){
-
+        return (this.myContainerResourceDecreaseList ==null)?null:this.myContainerResourceDecreaseList.getDecreasedContainers();
     }
 
 
     public  void setDecreasedContainers(
             List<ContainerResourceDecrease> decreasedContainers){
-
+        this.myContainerResourceDecreaseList =(decreasedContainers == null)? null: new MyContainerResourceDecreaseList(decreasedContainers);
     }
 
 
     public  Token getAMRMToken(){
-        return this.myAmRmToken.tansBack();
+        return (this.myAmRmToken == null)?null:this.myAmRmToken.tansBack();
     }
 
     public  void setAMRMToken(Token amRMToken){
-        this.myAmRmToken = MyToken.newInstance(
+        this.myAmRmToken = (amRMToken == null)?null:MyToken.newInstance(
                 amRMToken.getIdentifier().array(),
                 amRMToken.getKind(),
                 amRMToken.getPassword().array(),
                 amRMToken.getService());
     }
 
+    private class MyContainerResourceDecreaseList implements  Serializable{
+        private List<MyContainerResourceDecrease> myContainerResourceDecreaseList;
 
-    private class MyNMTokenList {
+        public MyContainerResourceDecreaseList(List<ContainerResourceDecrease> decreasedContainers) {
+            this.myContainerResourceDecreaseList = new ArrayList<MyContainerResourceDecrease>();
+            for (Iterator it2 = myContainerResourceDecreaseList.iterator(); it2.hasNext(); ) {
+                ContainerResourceDecrease temp = (ContainerResourceDecrease) it2.next();
+                myContainerResourceDecreaseList.add(MyContainerResourceDecrease.newInstance(
+                        temp.getContainerId(),
+                        temp.getCapability()
+                ));
+            }
+        }
+
+        public List<ContainerResourceDecrease> getDecreasedContainers() {
+
+            List<ContainerResourceDecrease> decreasedContainers = new ArrayList<ContainerResourceDecrease>();
+            for (Iterator it2 = this.myContainerResourceDecreaseList.iterator(); it2.hasNext(); ) {
+                ContainerResourceDecrease temp = ((MyContainerResourceDecrease) it2.next()).tansBack();
+                decreasedContainers.add(temp);
+            }
+            return decreasedContainers;
+        }
+    }
+
+    private class MyContainerResourceIncreaseList implements  Serializable{
+        private List<MyContainerResourceIncrease> myContainerResourceIncreaseList;
+
+        public MyContainerResourceIncreaseList(List<ContainerResourceIncrease> increasedContainers) {
+            this.myContainerResourceIncreaseList = new ArrayList<MyContainerResourceIncrease>();
+            for (Iterator it2 = myContainerResourceIncreaseList.iterator(); it2.hasNext(); ) {
+                ContainerResourceIncrease temp = (ContainerResourceIncrease) it2.next();
+                myContainerResourceIncreaseList.add(MyContainerResourceIncrease.newInstance(
+                        temp.getContainerId(),
+                        temp.getCapability(),
+                        temp.getContainerToken()
+                ));
+            }
+        }
+
+        public List<ContainerResourceIncrease> getIncreasedContainers() {
+            List<ContainerResourceIncrease> increasedContainers = new ArrayList<ContainerResourceIncrease>();
+            for (Iterator it2 = this.myContainerResourceIncreaseList.iterator(); it2.hasNext(); ) {
+                ContainerResourceIncrease temp = ((MyContainerResourceIncrease) it2.next()).tansBack();
+                increasedContainers.add(temp);
+            }
+            return increasedContainers;
+        }
+    }
+
+    private class MyNMTokenList implements  Serializable{
         private List<MyNMToken> myNmTokens;
 
         public MyNMTokenList(List<NMToken> nmTokens) {
@@ -214,7 +271,7 @@ public class MyAllocateResponse implements Serializable{
     }
 
 
-    private class MyUpdateNodes{
+    private class MyUpdateNodes implements  Serializable{
         private List<MyNodeReport> myNodeReportList ;
         public MyUpdateNodes(List<NodeReport> updatedNodes){
            this.myNodeReportList = new ArrayList<MyNodeReport>();
@@ -245,7 +302,7 @@ public class MyAllocateResponse implements Serializable{
         }
 
     }
-    private class MyAllocatedContainers{
+    private class MyAllocatedContainers implements  Serializable{
         private List<MyContainer> MyContainerList;
         public MyAllocatedContainers(List<Container> allocatedContainers){
             this.MyContainerList = new ArrayList<MyContainer>();
@@ -271,7 +328,7 @@ public class MyAllocateResponse implements Serializable{
             return allocatedContainers;
         }
     }
-    private class MyCompletedContainers {
+    private class MyCompletedContainers implements  Serializable{
         private List<MyContainerStatus> myContainerStatusList;
         public MyCompletedContainers(List<ContainerStatus> completedContainers){
             this.myContainerStatusList = new ArrayList<MyContainerStatus>();

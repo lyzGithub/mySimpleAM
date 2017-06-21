@@ -127,6 +127,11 @@ public class NMClientImpl extends NMClient {
     }
     cmProxy = new ContainerManagementProtocolProxy(conf, getNMTokenCache());
   }
+
+  /*@Override
+  public   boolean setNMTokenCache(List<NMToken> nmTokens){
+    this.nmTokenCache
+  }*/
   
   @Override
   public void cleanupRunningContainersOnStop(boolean enabled) {

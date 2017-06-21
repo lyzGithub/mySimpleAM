@@ -8,9 +8,9 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.application.myApp.remoteAPPMaster;
+import com.application.yarnAm.remoteAPPMaster;
 import hadoopRPC.MySeriaData.MyAllocateRequest;
-import hadoopRPC.MySeriaData.byteTrans;
+import hadoopRPC.MySeriaData.ByteTrans;
 import hadoopRPC.Server.CaculateServer;
 import hadoopRPC.Server.CaculateService;
 import org.apache.hadoop.conf.Configuration;
@@ -19,7 +19,6 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.service.AbstractService;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
-import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
 import org.apache.hadoop.yarn.api.records.Priority;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.api.records.ResourceRequest;
@@ -60,8 +59,6 @@ public class RPCClient extends
             LOGGER.info("2+3=" + add);
             LOGGER.info("5-2=" + sub);
 
-
-
             Priority priority = Records.newRecord(Priority.class);
             priority.setPriority(0);
 
@@ -77,7 +74,7 @@ public class RPCClient extends
             myAsk.add(rq);
             AllocateRequest request1 = AllocateRequest.newInstance(1,0,myAsk,null,null,null);
             MyAllocateRequest  myRequest = MyAllocateRequest.newInstance(1,0,myAsk,null,null,null);
-            byte[] byy = byteTrans.ObjectToBytes((Object)myRequest);
+            byte[] byy = ByteTrans.ObjectToBytes((Object)myRequest);
             service.tansBytes(new BytesWritable(byy));
         } catch (Exception ex) {
             ex.printStackTrace();

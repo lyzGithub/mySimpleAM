@@ -5,15 +5,17 @@ package hadoopRPC.Server;
  */
 import java.io.IOException;
 
+import hadoopRPC.MySeriaData.ByteTrans;
 import hadoopRPC.MySeriaData.ConfigureAPI;
 import hadoopRPC.MySeriaData.MyAllocateRequest;
-import hadoopRPC.MySeriaData.byteTrans;
+import hadoopRPC.MySeriaData.MyAllocateResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.ipc.ProtocolSignature;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
+import org.apache.hadoop.yarn.api.records.AMCommand;
 
 
 /**
@@ -50,9 +52,9 @@ public class CaculateServiceImpl implements CaculateService {
         return new IntWritable(arg1.get() - arg2.get());
     }
 
-    public IntWritable tansBytes(BytesWritable args){
+    public BytesWritable tansBytes(BytesWritable args){
         LOG.info("in tansBytes! tans back to MyAllocateRequest ");
-        MyAllocateRequest myAllocateRequest = (MyAllocateRequest) byteTrans.bytesToObject(args.getBytes());
+        MyAllocateRequest myAllocateRequest = (MyAllocateRequest) ByteTrans.bytesToObject(args.getBytes());
         if(myAllocateRequest == null)
             LOG.error("in tansBytes! null myAllocateRequest pointer! ");
 
@@ -63,7 +65,9 @@ public class CaculateServiceImpl implements CaculateService {
                 myAllocateRequest.getAskList(),
                 myAllocateRequest.getReleaseList(),
                 myAllocateRequest.getResourceBlacklistRequest());
-        return new IntWritable(1);
+        MyAllocateResponse myRs = MyAllocateResponse.newInstance(1,null,null,
+                null,null, AMCommand.AM_RESYNC,0,null,null);
+        return new BytesWritable(ByteTrans.ObjectToBytes(myRs));
     }
 
 

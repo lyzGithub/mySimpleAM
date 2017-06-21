@@ -30,6 +30,8 @@ import com.application.api.impl.NMClientImpl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -145,5 +147,17 @@ public abstract class NMClient extends AbstractService {
   public NMTokenCache getNMTokenCache() {
     return nmTokenCache;
   }
+
+  public   void setNMTokenCache(List<NMToken> nmTokens){
+    for(Iterator it2 = nmTokens.iterator(); it2.hasNext();) {
+      NMToken nmToken = (NMToken)it2.next();
+      NodeId nodeId = nmToken.getNodeId();
+      nmTokenCache.setToken(nodeId.getHost()+":"+nodeId.getPort(),nmToken.getToken());
+      //@param nodeAddr node address (host:port)
+      //@param token NMToken
+    }
+
+  }
+
 
 }

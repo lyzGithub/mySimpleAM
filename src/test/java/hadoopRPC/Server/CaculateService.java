@@ -26,6 +26,6 @@ public interface CaculateService extends VersionedProtocol {
     // defined sub function
     public IntWritable sub(IntWritable arg1, IntWritable arg2);
 
-    public IntWritable tansBytes(BytesWritable args);
+    public BytesWritable tansBytes(BytesWritable args);
 
 }

@@ -4,9 +4,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.application.myApp.remoteAPPMaster;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
 import org.apache.hadoop.yarn.api.records.Priority;
 import org.apache.hadoop.yarn.api.records.Resource;
@@ -16,7 +13,7 @@ import org.apache.hadoop.yarn.util.Records;
 /**
  * Created by ubuntu2 on 6/19/17.
  */
-public class byteTrans {
+public class ByteTrans {
     //byte to object
     public static Object bytesToObject(byte[] bytes) {
         Object obj = null;
