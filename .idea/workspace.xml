@@ -5,31 +5,152 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="23ff1ca9-db52-4834-a062-4cecfa54c0b4" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/testYarnAm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/justForTes/testClass.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ERROR.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/INFO.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/AmAllocateClient.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/AmAllocateService.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/UnmanagedAMLauncher$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/UnmanagedAMLauncher$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/UnmanagedAMLauncher.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/remoteAPPMaster$RpcServerThread.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/remoteAPPMaster$clusterMake.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/remoteAPPMaster.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/AMRMClientImpl.class" afterPath="$PROJECT_DIR$/target/classes/com/application/api/impl/AMRMClientImpl.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/Client/RPCClient.class" afterPath="$PROJECT_DIR$/target/test-classes/hadoopRPC/Client/RPCClient.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/ByteTrans.class" afterPath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/ByteTrans.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/MySeriaData/MyResourceRequest.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/MySeriaData/MyResourceRequest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/UmAm/UnmanagedAMLauncher.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/UmAm/UnmanagedAMLauncher.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/api/AMRMClient.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/api/AMRMClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/api/impl/AMRMClientImpl.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/api/impl/AMRMClientImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/myApp/MySimpleAM.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/myApp/MySimpleAM.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/AmAllocateClient.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/AmAllocateClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/AmAllocateService.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/AmAllocateService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/remoteAPPMaster.java" afterPath="$PROJECT_DIR$/src/main/java/com/application/yarnAm/remoteAPPMaster.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/hadoopRPC/Client/RPCClient.java" afterPath="$PROJECT_DIR$/src/test/java/hadoopRPC/Client/RPCClient.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/capacity-scheduler.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/ByteTrans.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/ConfigureAPI$ServerAddress.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/ConfigureAPI$VersionID.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/ConfigureAPI.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateRequest$MyAskList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateRequest$MyBlackListRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateRequest$MyReleaseList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse$MyAllocatedContainers.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse$MyCompletedContainers.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse$MyContainerResourceDecreaseList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse$MyContainerResourceIncreaseList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse$MyNMTokenList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse$MyUpdateNodes.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyAllocateResponse.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyCapability.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyContainerID$MyApplicationAttemptID.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyContainerID.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyContainerResourceDecrease.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyContainerResourceIncrease.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyContainerStatus.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyNMToken.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyNodeId.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyNodeReport.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyPreemptionContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyPreemptionContract$PreemptionResourceRequestList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyPreemptionContract$SetOfPreemptionContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyPreemptionContract.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyPreemptionMessage.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyPreemptionResourceRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyResource.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyResourceRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyStrictPreemptionContract$SetOfPreemptionContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyStrictPreemptionContract.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/MySeriaData/MyToken.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/UmAm/UnmanagedAMLauncher$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/UmAm/UnmanagedAMLauncher$2.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/UmAm/UnmanagedAMLauncher.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/AHSClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/AMRMClient$ContainerRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/AMRMClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/InvalidContainerRequestException.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/NMClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/NMTokenCache.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/YarnClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/YarnClientApplication.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/AMRMClientAsync$CallbackHandler.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/AMRMClientAsync.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/NMClientAsync$CallbackHandler.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/NMClientAsync.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/AMRMClientAsyncImpl$CallbackHandlerThread.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/AMRMClientAsyncImpl$HeartbeatThread.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/AMRMClientAsyncImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$ContainerEvent.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$ContainerEventProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$ContainerEventType.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$ContainerState.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$StartContainerEvent.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$StatefulContainer$OutOfOrderTransition.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$StatefulContainer$StartContainerTransition.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$StatefulContainer$StopContainerTransition.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl$StatefulContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/NMClientAsyncImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/impl/package-info.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/async/package-info.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/AHSClientImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/AMRMClientImpl$ResourceRequestInfo.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/AMRMClientImpl$ResourceReverseMemoryThenCpuComparator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/AMRMClientImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/ContainerManagementProtocolProxy$ContainerManagementProtocolProxyData.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/ContainerManagementProtocolProxy.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/NMClientImpl$StartedContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/NMClientImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/YarnClientImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/impl/package-info.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/api/package-info.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/MySimpleAM.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/myApp/testAm.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/yarnAm/AmAllocateClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/yarnAm/AmAllocateService.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/yarnAm/remoteAPPMaster$RpcServerThread.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/yarnAm/remoteAPPMaster$clusterMake.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/yarnAm/remoteAPPMaster.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/application/yarnAm/testYarnAm.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/log4j.properties" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/yarn-site.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/Client/RPCClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/ByteTrans.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/ConfigureAPI$ServerAddress.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/ConfigureAPI$VersionID.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/ConfigureAPI.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateRequest$MyAskList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateRequest$MyBlackListRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateRequest$MyReleaseList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse$MyAllocatedContainers.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse$MyCompletedContainers.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse$MyContainerResourceDecreaseList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse$MyContainerResourceIncreaseList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse$MyNMTokenList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse$MyUpdateNodes.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyAllocateResponse.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyCapability.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyContainerID$MyApplicationAttemptID.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyContainerID.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyContainerResourceDecrease.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyContainerResourceIncrease.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyContainerStatus.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyNMToken.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyNodeId.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyNodeReport.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyNodeState.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyPreemptionContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyPreemptionContract$PreemptionResourceRequestList.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyPreemptionContract$SetOfPreemptionContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyPreemptionContract.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyPreemptionMessage.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyPreemptionResourceRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyResource.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyResourceRequest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyStrictPreemptionContract$SetOfPreemptionContainer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyStrictPreemptionContract.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/MySeriaData/MyToken.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/Server/CaculateServer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/Server/CaculateService.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/hadoopRPC/Server/CaculateServiceImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/justForTes/testClass.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/rmi/helloServer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/rmi/remoteImple.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/rmi/remoteInterface.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/rmi/rmiClient.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/socket/clientSocket.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/socket/serverSocket.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/thread/InstanceCallbackDigest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/thread/InstanceCallbackDigestUserInterface.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/thread/main.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/thread/testThread1$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/thread/testThread1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/yarnRPC/client/Client.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/yarnRPC/client/ClientImpl.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/yarnRPC/server/ServerProtocol.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/yarnRPC/server/ServerService.class" afterPath="" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -47,7 +168,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/application/yarnAm/testYarnAm.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="405">
-              <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -59,7 +180,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/application/api/impl/AMRMClientImpl.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="313">
-              <caret line="220" column="28" lean-forward="true" selection-start-line="220" selection-start-column="28" selection-end-line="220" selection-end-column="28" />
+              <caret line="220" column="28" lean-forward="false" selection-start-line="220" selection-start-column="28" selection-end-line="220" selection-end-column="28" />
               <folding>
                 <element signature="e#5121#5138#0" expanded="true" />
               </folding>
@@ -71,7 +192,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/application/api/AMRMClient.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="198">
-              <caret line="246" column="1" lean-forward="true" selection-start-line="246" selection-start-column="1" selection-end-line="251" selection-end-column="44" />
+              <caret line="246" column="1" lean-forward="false" selection-start-line="246" selection-start-column="1" selection-end-line="251" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -105,7 +226,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/application/MySeriaData/MyAllocateRequest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="342">
-              <caret line="150" column="59" lean-forward="true" selection-start-line="150" selection-start-column="59" selection-end-line="150" selection-end-column="59" />
+              <caret line="150" column="59" lean-forward="false" selection-start-line="150" selection-start-column="59" selection-end-line="150" selection-end-column="59" />
               <folding>
                 <element signature="e#5436#5453#0" expanded="true" />
               </folding>
@@ -116,8 +237,8 @@
       <file leaf-file-name="remoteAPPMaster.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/application/yarnAm/remoteAPPMaster.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="186" column="0" lean-forward="true" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+            <state relative-caret-position="126">
+              <caret line="170" column="4" lean-forward="false" selection-start-line="170" selection-start-column="4" selection-end-line="170" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -1234,7 +1355,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/application/MySeriaData/MyAllocateRequest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="342">
-          <caret line="150" column="59" lean-forward="true" selection-start-line="150" selection-start-column="59" selection-end-line="150" selection-end-column="59" />
+          <caret line="150" column="59" lean-forward="false" selection-start-line="150" selection-start-column="59" selection-end-line="150" selection-end-column="59" />
           <folding>
             <element signature="e#5436#5453#0" expanded="true" />
           </folding>
@@ -1272,7 +1393,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/application/api/AMRMClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
-          <caret line="246" column="1" lean-forward="true" selection-start-line="246" selection-start-column="1" selection-end-line="251" selection-end-column="44" />
+          <caret line="246" column="1" lean-forward="false" selection-start-line="246" selection-start-column="1" selection-end-line="251" selection-end-column="44" />
           <folding />
         </state>
       </provider>
@@ -1280,7 +1401,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/application/api/impl/AMRMClientImpl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="313">
-          <caret line="220" column="28" lean-forward="true" selection-start-line="220" selection-start-column="28" selection-end-line="220" selection-end-column="28" />
+          <caret line="220" column="28" lean-forward="false" selection-start-line="220" selection-start-column="28" selection-end-line="220" selection-end-column="28" />
           <folding>
             <element signature="e#5121#5138#0" expanded="true" />
           </folding>
@@ -1290,7 +1411,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/application/yarnAm/testYarnAm.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
-          <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1299,8 +1420,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/application/yarnAm/remoteAPPMaster.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="186" column="0" lean-forward="true" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+        <state relative-caret-position="126">
+          <caret line="170" column="4" lean-forward="false" selection-start-line="170" selection-start-column="4" selection-end-line="170" selection-end-column="4" />
           <folding />
         </state>
       </provider>
