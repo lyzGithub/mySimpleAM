@@ -64,8 +64,9 @@ public class MySimpleAM implements Runnable{
                         + " success" };
 
         LOG.info("Initializing Launcher");
+        Configuration conf = new YarnConfiguration();
         UnmanagedAMLauncher launcher =
-                new UnmanagedAMLauncher();
+                new UnmanagedAMLauncher(conf);
         boolean initSuccess = launcher.init(args);
         LOG.info("Running Launcher");
         boolean result = launcher.run();
@@ -88,7 +89,7 @@ public class MySimpleAM implements Runnable{
         if (args[0].equals("success")) {
 
             final String command = "hello";
-            final int n = 4;
+            final int n = 1;
             //final String command = args[0];
             // final int n = Integer.valueOf(args[1]);
             // Initialize clients to ResourceManager and NodeManagers
@@ -128,11 +129,11 @@ public class MySimpleAM implements Runnable{
 
                 if((i%2) == 0) {
                     LOG.info("in simple am add hdfs1");
-                    rmClient.addContainerRequest(containerAsk);//"hdfs1");
+                    rmClient.addContainerRequest(containerAsk,"hdfs1");
                 }
                 else {
                     LOG.info("in simple am add local");
-                    rmClient.addContainerRequest(containerAsk);
+                    rmClient.addContainerRequest(containerAsk,"hdfs1");
                 }
             }
 
@@ -144,6 +145,7 @@ public class MySimpleAM implements Runnable{
             while (completedContainers<n) {
                 LOG.info("begin a container work !");
                 AllocateResponse response = rmClient.allocate(responseId++);
+
                 //nmClient.setNMTokenCache(response.getNMTokens());
                 for (Container container : response.getAllocatedContainers()) {
                     // Launch container by create ContainerLaunchContext
@@ -164,10 +166,7 @@ public class MySimpleAM implements Runnable{
                     vetex = completedContainers;
                 }
                 Thread.sleep(1000);
-                if(responseId>60){
-                    LOG.error("response container is error  !");
-                    break;
-                }
+
             }
             LOG.info("Go to Finish am !");
             System.out.println("Go to Finish am !" );

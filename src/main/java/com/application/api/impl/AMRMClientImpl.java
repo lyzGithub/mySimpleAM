@@ -206,15 +206,9 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
     }
     return response;
   }
-  @Override
-  public  AllocateResponse allocate(AllocateRequest allocateRequest ,String remoteName,float progressIndicator)
-          throws YarnException, IOException{
 
-    return null;
-  }
   @Override
-  public AllocateResponse allocate(AllocateRequest allocateRequest,
-                                             float progressIndicator)
+  public void addAllocateRequest(AllocateRequest allocateRequest)
           throws YarnException, IOException{
     LOG.info("in amrmclient allocate2 !!");
 
@@ -230,9 +224,6 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
     release.addAll(myRelease);
     blacklistAdditions.addAll(myAddBR);
     blacklistRemovals.addAll(myRemovalBR);
-
-    return this.allocate(progressIndicator);
-
   }
   @Override
   public AllocateResponse allocate(float progressIndicator)
@@ -417,6 +408,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
             + joiner.join(req.getRacks()));
       }
     }
+    LOG.info("req.req.getNodeLabelExpression"+req.getNodeLabelExpression());
     Set<String> inferredRacks = resolveRacks(req.getNodes());
     inferredRacks.removeAll(dedupedRacks);
 
@@ -468,6 +460,7 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
   @Override
   public synchronized void addContainerRequest(T req,String sourceAddress) {
     LOG.info("in amrmclient addContainerRequest2 !!");
+    LOG.info("req.req.getNodeLabelExpression:"+req.getNodeLabelExpression());
 
     String addAhead = sourceAddress+":";//diaYarn1:*
     Preconditions.checkArgument(req != null,

@@ -20,6 +20,7 @@ public class MyResourceRequest implements Serializable {
     public MyResourceRequest(ResourceRequest request){
         this.capability = new MyCapability(request.getCapability().getMemory(),
                 request.getCapability().getVirtualCores());
+
         this.resource_name = request.getResourceName();
         this.relax_locality = request.getRelaxLocality();
         this.priority = request.getPriority().getPriority();
@@ -46,7 +47,7 @@ public class MyResourceRequest implements Serializable {
     public ResourceRequest transBack(){
         ResourceRequest rrt =
                 ResourceRequest.newInstance(Priority.newInstance(this.priority),this.resource_name,
-                        Resource.newInstance(this.capability.getMem(),this.capability.getMem()),this.num_containers);
+                        Resource.newInstance(this.capability.getMem(),this.capability.getVc()),this.num_containers);
         return rrt;
     }
 }

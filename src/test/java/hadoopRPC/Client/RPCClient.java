@@ -22,6 +22,7 @@ import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
 import org.apache.hadoop.yarn.api.records.Priority;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.api.records.ResourceRequest;
+import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.util.Records;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +67,11 @@ public class RPCClient extends
             Resource capability = Records.newRecord(Resource.class);
             capability.setMemory(128);
             capability.setVirtualCores(1);
-
-            remoteAPPMaster rp1 = new remoteAPPMaster("disYarn1",0);
+            Configuration myConf = new YarnConfiguration();
+            //LOG.info("in testYarnAm, set the yarn address !!! ");
+            myConf.set("yarn.resourcemanager.address","114.212.81.167:8032");
+            myConf.set("yarn.resourcemanager.scheduler.address","114.212.81.167:8030");
+            remoteAPPMaster rp1 = new remoteAPPMaster(myConf,0);
             ResourceRequest rq = ResourceRequest.newInstance(priority,null,capability,1);
             List<ResourceRequest> myAsk =
                     new ArrayList<ResourceRequest>();

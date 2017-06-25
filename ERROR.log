@@ -1,0 +1,2 @@
+2017-06-25 15:27:31  [ Thread-1:465 ] - [ ERROR ]  allocate server  error,message is Problem binding to [localhost:9090] java.net.BindException: Address already in use; For more details see:  http://wiki.apache.org/hadoop/BindException
+2017-06-25 16:00:14  [ Thread-1:432 ] - [ ERROR ]  allocate server  error,message is Problem binding to [0.0.0.0:9999] java.net.BindException: Address already in use; For more details see:  http://wiki.apache.org/hadoop/BindException

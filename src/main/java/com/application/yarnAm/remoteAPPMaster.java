@@ -1,10 +1,5 @@
 package com.application.yarnAm;
 
-import com.application.MySeriaData.ByteTrans;
-import com.application.MySeriaData.ConfigureAPI;
-import com.application.MySeriaData.MyAllocateRequest;
-import com.application.MySeriaData.MyAllocateResponse;
-import com.application.UmAm.UnmanagedAMLauncher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -12,10 +7,16 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.ipc.ProtocolSignature;
 import org.apache.hadoop.ipc.RPC;
+import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
 import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
+import com.application.MySeriaData.ByteTrans;
+import com.application.MySeriaData.ConfigureAPI;
+import com.application.MySeriaData.MyAllocateRequest;
+import com.application.MySeriaData.MyAllocateResponse;
+import com.application.UmAm.UnmanagedAMLauncher;
 import com.application.api.AMRMClient;
 import com.application.api.NMClient;
 import org.apache.hadoop.yarn.util.Records;
@@ -23,6 +24,7 @@ import org.apache.hadoop.yarn.util.Records;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class remoteAPPMaster implements AmAllocateService{
 	private static final Log LOG = LogFactory.getLog(remoteAPPMaster.class);
 	//private AMRMClient<AMRMClient.ContainerRequest> rmClient;// client from am to rm
 
-	protected static Configuration conf = new YarnConfiguration();
+	protected static Configuration myConf = new YarnConfiguration();
 
 	protected static boolean IsUnRegister = false;
 
@@ -41,58 +43,6 @@ public class remoteAPPMaster implements AmAllocateService{
 	protected  static AllocateResponse allRep;
 	protected static boolean isNewRequest = false;
 	protected  static AllocateRequest requestTmp;
-	private static String remoteYarnLabel;
-	private static int amHostPort;
-
-	public remoteAPPMaster(){
-		LOG.info("new a am and a hadoop rpc server!");
-	}
-	public remoteAPPMaster(String remoteYarnLabel, int amHostPort) throws Exception {
-		LOG.info("in remoteAPPMaster new!");
-
-		this.remoteYarnLabel = remoteYarnLabel;
-		this.amHostPort = amHostPort;
-		conf = new YarnConfiguration();
-		//resource manager address example 114.212.91.12
-		String yarnString = conf.get(remoteYarnLabel);
-		//modify the default yarn address to new one
-		requestTmp = null;
-		conf.set(yarnAddressLabel,"0.0.0.0");
-		clusterMake cM = new clusterMake(conf);
-		Thread t1 = new Thread(cM);
-		LOG.info("in remoteAPPMaster thread start!");
-		t1.start();
-		LOG.info("in remoteAPPMaster thread start finish!");
-
-
-	}
-
-	/*public AllocateResponse GetAlloRequest(AllocateRequest request)
-			throws YarnException, IOException, InterruptedException {
-		//modify the AMRMClient to accept the request
-		//use function addRequestAllocate
-		LOG.info("in remoteAPPMaster GetAlloRequest1!");
-
-		requestTmp = request;
-		isNewRequest = true;
-
-
-		while(canReturnRep == false){
-			isNewRequest = true;
-			Thread.sleep(1000);
-			LOG.info("in remoteAPPMaster GetAlloRequest,wait for am to get response! isNewRequest: "+isNewRequest);
-
-		}
-		LOG.info("in remoteAPPMaster GetAlloRequest2!");
-
-		canReturnRep = false;
-		return allRep;
-	}
-*/
-	public boolean setUnRegister(){
-		IsUnRegister = true;
-		return true;
-	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// ///////////////////Am and hadoop rpc
@@ -103,6 +53,30 @@ public class remoteAPPMaster implements AmAllocateService{
 	public long getProtocolVersion(String arg0, long arg1) throws IOException {
 		return ConfigureAPI.VersionID.RPC_VERSION;
 	}
+
+	public remoteAPPMaster(){
+		LOG.info("new a am and a hadoop rpc server!");
+	}
+	public remoteAPPMaster(Configuration conf, int amHostPort) throws Exception {
+		LOG.info("in remoteAPPMaster new!");
+
+		this.myConf = new YarnConfiguration(conf);
+
+		requestTmp = null;
+		clusterMake cM = new clusterMake(myConf,amHostPort);
+		Thread t1 = new Thread(cM);
+		LOG.info("in remoteAPPMaster thread start!");
+		t1.start();
+		LOG.info("in remoteAPPMaster thread start finish!");
+
+
+	}
+
+	public boolean setUnRegister(){
+		IsUnRegister = true;
+		return true;
+	}
+
 
 	public IntWritable add(IntWritable arg1, IntWritable arg2) {
 		return new IntWritable(arg1.get() + arg2.get());
@@ -117,7 +91,7 @@ public class remoteAPPMaster implements AmAllocateService{
 		MyAllocateRequest myAllocateRequest = (MyAllocateRequest) ByteTrans.bytesToObject(args.getBytes());
 		if(myAllocateRequest == null)
 			LOG.error("in tansBytes! null myAllocateRequest pointer! ");
-
+		LOG.info(myAllocateRequest.getAskList().get(0).getCapability().getVirtualCores());
 		LOG.info("in tansBytes! tans  to allocateRequest ");
 		AllocateRequest allocateRequest = AllocateRequest.newInstance(
 				myAllocateRequest.getResponseId(),
@@ -126,9 +100,9 @@ public class remoteAPPMaster implements AmAllocateService{
 				myAllocateRequest.getReleaseList(),
 				myAllocateRequest.getResourceBlacklistRequest());
 		requestTmp = allocateRequest;
+
+
 		isNewRequest = true;
-
-
 		while(canReturnRep == false){
 			isNewRequest = true;
 			Thread.sleep(1000);
@@ -138,13 +112,7 @@ public class remoteAPPMaster implements AmAllocateService{
 		LOG.info("inremoteAPPMaster tansBytes !");
 
 		canReturnRep = false;
-		/*
-		(int responseId,
-                                               List<ContainerStatus> completedContainers,
-                                               List<Container> allocatedContainers, List<NodeReport> updatedNodes,
-                                               Resource availResources, AMCommand command, int numClusterNodes,
-                                               PreemptionMessage preempt, List<NMToken> nmTokens)
-		 */
+
 		MyAllocateResponse myAllocateResponse = MyAllocateResponse.newInstance(
 				allRep.getResponseId(),
 				allRep.getCompletedContainersStatuses(),
@@ -163,15 +131,19 @@ public class remoteAPPMaster implements AmAllocateService{
 		return new BytesWritable(ByteTrans.ObjectToBytes(myAllocateResponse));
 	}
 	public static class RpcServerThread implements Runnable{
+		private int amRPCServerHost = 9999;
+		private final String localHost = "0.0.0.0";
+		public RpcServerThread(int host){
+			amRPCServerHost = host;
+		}
 		public void run() {
 			try {
 				RPC.Server server = new RPC.Builder(new Configuration()).setProtocol(AmAllocateService.class)
-						.setBindAddress("127.0.0.1").setPort(IPC_PORT).setInstance(new remoteAPPMaster()).build();
+						.setBindAddress(localHost).setPort(amRPCServerHost).setInstance(new remoteAPPMaster()).build();
 				server.start();
 				LOG.info("allocate server has started");
 				System.in.read();
-				LOG.info("allocate server has started2");
-
+				LOG.info("allocate server has started finish");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				LOG.error("allocate server  error,message is " + ex.getMessage());
@@ -181,12 +153,15 @@ public class remoteAPPMaster implements AmAllocateService{
 	}
 	public static final int IPC_PORT = 9090;
 	// provide main method so this class can act as AM
+	private final static String yraLabel = "yarn.resourcemanager.address";
+	private final static String yrsaLabel = "yarn.resourcemanager.scheduler.address";
 	public static void main(String[] args) throws Exception {
 		System.out.println("!!!!!!!!!!!!!!!!!!!!!stop a while in my main!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		// Thread.sleep(200);
-		if (args[0].equals("success")) {
+		String[] temp = args[0].split(":");
+		if (temp[0].equals("success")) {
 			//start a hadoop rpc server!
-			RpcServerThread rpcServerThread = new RpcServerThread();
+			RpcServerThread rpcServerThread = new RpcServerThread( Integer.parseInt(temp[2]));
 			Thread rS = new Thread(rpcServerThread);
 			LOG.info("in remoteAPPMaster main start rpc server thread!");
 			rS.start();
@@ -197,51 +172,45 @@ public class remoteAPPMaster implements AmAllocateService{
 			LOG.info("go to start the amrmclient in main to allocate resource");
 			//conf.set("yarn.resourcemanager.hostname","114.212.87.91");
 			AMRMClient<AMRMClient.ContainerRequest> rmClient = AMRMClient.createAMRMClient();
-			conf.set("yarn.resourcemanager.address","0.0.0.0:8032");
-			conf.set("yarn.resourcemanager.scheduler.address","0.0.0.0:8030");
-			rmClient.init(conf);
+
+			String remoteYarnIp = temp[1];
+			LOG.info("in remoteAPPMaster main,remoteYarnIp:"+remoteYarnIp);
+			Configuration myConfiguration = new YarnConfiguration();
+			myConfiguration.set(yraLabel,remoteYarnIp+":8032");
+			myConfiguration.set(yrsaLabel,remoteYarnIp+":8030");
+			rmClient.init(myConfiguration);
 			rmClient.start();
 			// Register with ResourceManager
 			LOG.info("registerApplicationMaster ...");
 			rmClient.registerApplicationMaster("", 0, "");
 			LOG.info("registerApplicationMaster success!");
 
-			NMClient nmClient = NMClient.createNMClient();
-			nmClient.init(conf);
-			nmClient.start();
-
-
-			// Priority for worker containers - priorities are intra-application
-			Priority priority = Records.newRecord(Priority.class);
-			priority.setPriority(0);
-
-			// Resource requirements for worker containers
-			Resource capability = Records.newRecord(Resource.class);
-			capability.setMemory(128);
-			capability.setVirtualCores(1);
-
-			for (int i = 0; i < 2; ++i) {
-				AMRMClient.ContainerRequest containerAsk =
-						new AMRMClient.ContainerRequest(capability, null, null, priority);
-				System.out.println("Making res-req " + i);
-				rmClient.addContainerRequest(containerAsk);
-			}
 
 			while (!IsUnRegister) {
 				//System.out.println("begin a container work !");
-				LOG.info("in ams am main while1 !");
+				LOG.info("in remoteAPPMaster am main while1 !");
 				LOG.info("isNewRequest: "+isNewRequest);
 				if(isNewRequest){
-					LOG.info("in ams am main while2 !");
-
+					LOG.info("in remoteAPPMaster am main while2 !");
 					int i = 0;
 					List<AllocateResponse> listRsp = new ArrayList<AllocateResponse>();
-					int containerAskNum = 2;//requestTmp.getAskList().size();
-					while(i<containerAskNum) {
-						AllocateResponse response = rmClient.allocate(i);
-						listRsp.add(response);
-						i += response.getAllocatedContainers().size();
-						LOG.info("in ams am main while3 response container!"+i);
+					int numOfAllRequest = 0;
+					List<ResourceRequest> resourceRequestList = requestTmp.getAskList();
+					for(Iterator it2 = resourceRequestList.iterator(); it2.hasNext();) {
+
+						ResourceRequest temp1 = (ResourceRequest)it2.next();
+						numOfAllRequest+=temp1.getNumContainers();
+
+					}
+					rmClient.addAllocateRequest(requestTmp);
+					rmClient.addAllocateRequest(requestTmp);
+					int rep = 0;
+					while(i<numOfAllRequest*2) {
+						AllocateResponse  allocateResponse = rmClient.allocate(++rep);
+						listRsp.add(allocateResponse);
+						i += allocateResponse.getAllocatedContainers().size();
+						LOG.info("in remoteAPPMaster am main while3, response container: "+i
+								+" request: "+numOfAllRequest*2);
 						Thread.sleep(500);
 					}
 					allRep = mergeResponseList(listRsp);
@@ -265,15 +234,16 @@ public class remoteAPPMaster implements AmAllocateService{
 	//an inner thread class for yarn client and application master
 	private  static class clusterMake implements Runnable{
 
-
+		private int amRPCServerHost = 9999;
 		private static final Log LOG = LogFactory
 				.getLog(clusterMake.class);
 
-		protected static Configuration myConf = new YarnConfiguration();
+		protected static Configuration myConf2 = new YarnConfiguration();
 		public clusterMake(){
 		}
-		public clusterMake(Configuration conf){
-			this.myConf = conf;
+		public clusterMake(Configuration conf, int amRPCServerHost){
+			this.amRPCServerHost = amRPCServerHost;
+			this.myConf2 = new YarnConfiguration(conf);
 		}
 
 		public void run() {
@@ -287,12 +257,13 @@ public class remoteAPPMaster implements AmAllocateService{
 		}
 
 
+		private final String  hereYarnAddressLabel = "yarn.resourcemanager.hostname";
 
 		public void useUMALauncher() throws Exception {
 			LOG.info("!!!!!!!!!!!!!!!!!!!!!stop a while in useUMALauncher!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 			String classpath = getTestRuntimeClasspath();
-			LOG.info("classpath:" +classpath);
+			//LOG.info("classpath:" +classpath);
 
 			String javaHome = System.getenv("JAVA_HOME");
 			if (javaHome == null) {
@@ -309,11 +280,12 @@ public class remoteAPPMaster implements AmAllocateService{
 					javaHome
 							+ "/bin/java -Xmx512m "
 							+ remoteAPPMaster.class.getCanonicalName()
-							+ " success" };
-
+							+ " success"+":"+myConf2.get(hereYarnAddressLabel)+":"+amRPCServerHost };
+			LOG.info("remote yarn ip in the main args:"+
+					" success"+":"+myConf2.get(hereYarnAddressLabel)+":"+amRPCServerHost);
 			LOG.info("Initializing Launcher");
 			UnmanagedAMLauncher launcher =
-					new UnmanagedAMLauncher();
+					new UnmanagedAMLauncher(myConf2);
 			boolean initSuccess = launcher.init(args);
 			LOG.info("Running Launcher");
 			boolean result = launcher.run();
@@ -348,7 +320,9 @@ public class remoteAPPMaster implements AmAllocateService{
 	}
 
 
+
 	public static AllocateResponse mergeResponseList(List<AllocateResponse> responseList){
+		LOG.info("in ams allocate mergeResponseList ");
 
 		//store all request
 		List<AllocateResponse> allReList = new ArrayList<AllocateResponse>(responseList);
@@ -362,17 +336,35 @@ public class remoteAPPMaster implements AmAllocateService{
 		List<ContainerResourceIncrease> allCRI = new ArrayList<ContainerResourceIncrease>();
 		List<ContainerResourceDecrease> allCRD = new ArrayList<ContainerResourceDecrease>();
 
+		int reponseId = 0;
 		for(Iterator it2 = allReList.iterator(); it2.hasNext();){
 			AllocateResponse allocateResponse = (AllocateResponse)it2.next();
-			completedContainers.addAll(allocateResponse.getCompletedContainersStatuses());
-			allUpdateNode.addAll(allocateResponse.getUpdatedNodes());
-			allAllocatedContainer.addAll(allocateResponse.getAllocatedContainers());
-			allMen += allocateResponse.getAvailableResources().getMemory();
-			allVCore += allocateResponse.getAvailableResources().getVirtualCores();
+			reponseId = allocateResponse.getResponseId();
+			if(!allocateResponse.getCompletedContainersStatuses().isEmpty()) {
+				completedContainers.addAll(allocateResponse.getCompletedContainersStatuses());
+			}
+			if(!allocateResponse.getUpdatedNodes().isEmpty()) {
+				allUpdateNode.addAll(allocateResponse.getUpdatedNodes());
+			}
+			if(!allocateResponse.getAllocatedContainers().isEmpty()) {
+				allAllocatedContainer.addAll(allocateResponse.getAllocatedContainers());
+			}
+			if(allocateResponse.getAvailableResources() != null) {
+				allMen += allocateResponse.getAvailableResources().getMemory();
+				allVCore += allocateResponse.getAvailableResources().getVirtualCores();
+			}
+
 			allCN += allocateResponse.getNumClusterNodes();
-			allNMTokens.addAll(allocateResponse.getNMTokens());
-			allCRI.addAll(allocateResponse.getIncreasedContainers());
-			allCRD.addAll(allocateResponse.getDecreasedContainers());
+
+			if(!allocateResponse.getNMTokens().isEmpty()) {
+				allNMTokens.addAll(allocateResponse.getNMTokens());
+			}
+			if(!allocateResponse.getIncreasedContainers().isEmpty()) {
+				allCRI.addAll(allocateResponse.getIncreasedContainers());
+			}
+			if(!allocateResponse.getDecreasedContainers().isEmpty()) {
+				allCRD.addAll(allocateResponse.getDecreasedContainers());
+			}
 
 		}
 
@@ -381,7 +373,7 @@ public class remoteAPPMaster implements AmAllocateService{
 
 
 		AllocateResponse allResponse = AllocateResponse.newInstance(
-				6,
+				reponseId,
 				completedContainers,
 				allAllocatedContainer,
 				allUpdateNode,

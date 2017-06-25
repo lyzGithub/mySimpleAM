@@ -243,18 +243,12 @@ public abstract class AMRMClient<T extends AMRMClient.ContainerRequest> extends
                throws YarnException, IOException;
 
 
-  /*
-   *this function is to add the remote container request, add String disYarn1 disYarn2 to represent
-   * it .
-   */
-  public abstract AllocateResponse allocate(AllocateRequest allocateRequest ,String remoteName,float progressIndicator)
-          throws YarnException, IOException;
 
   /*
    *this function is to provide a interface for client to add request directly
    *
    */
-  public abstract AllocateResponse allocate(AllocateRequest allocateRequest, float progressIndicator)
+  public abstract void addAllocateRequest(AllocateRequest allocateRequest)
           throws YarnException, IOException;
   /**
    * Request additional containers and receive new container allocations.

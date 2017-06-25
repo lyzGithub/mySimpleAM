@@ -28,10 +28,10 @@ import org.apache.hadoop.security.token.Token;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.ApplicationConstants.Environment;
 import org.apache.hadoop.yarn.api.records.*;
-import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.security.AMRMTokenIdentifier;
+import com.application.api.YarnClient;
 import org.apache.hadoop.yarn.util.Records;
 
 import java.io.*;
@@ -82,7 +82,8 @@ public class UnmanagedAMLauncher {
      */
     public static void main(String[] args) {
         try {
-            UnmanagedAMLauncher client = new UnmanagedAMLauncher();
+            Configuration myConf = new YarnConfiguration();
+            UnmanagedAMLauncher client = new UnmanagedAMLauncher(myConf);
             LOG.info("Initializing Client");
             boolean doRun = client.init(args);
             if (!doRun) {
@@ -102,12 +103,8 @@ public class UnmanagedAMLauncher {
         this.conf = conf;
     }
 
-    public UnmanagedAMLauncher() throws Exception {
-        this(new Configuration());
-    }
 
     private void printUsage(Options opts) {
-        //printUsage
         new HelpFormatter().printHelp("Client", opts);
     }
 
@@ -137,11 +134,11 @@ public class UnmanagedAMLauncher {
             return false;
         }
 
-        appName = cliParser.getOptionValue("appname", "UnmanagedAMNew");
+        appName = cliParser.getOptionValue("appname", "UnmanagedAM");
         amPriority = Integer.parseInt(cliParser.getOptionValue("priority", "0"));
         amQueue = cliParser.getOptionValue("queue", "default");
         classpath = cliParser.getOptionValue("classpath", null);
-        LOG.info("classpath real:"+classpath);
+        //System.out.println("classpath2:"+classpath);
         amCmd = cliParser.getOptionValue("cmd");
         if (amCmd == null) {
             printUsage(opts);
@@ -150,18 +147,143 @@ public class UnmanagedAMLauncher {
         }
 
         YarnConfiguration yarnConf = new YarnConfiguration(conf);
-        LOG.info("ste the yarn address !!! ");
-        yarnConf.set("yarn.resourcemanager.address","0.0.0.0:8032");
-
         rmClient = YarnClient.createYarnClient();
         rmClient.init(yarnConf);
 
         return true;
     }
 
+    public void launchAM(ApplicationAttemptId attemptId)
+            throws IOException, YarnException {
+        LOG.info("in UnmanagerAMLauncher, launchAM");
+        Credentials credentials = new Credentials();
+        Token<AMRMTokenIdentifier> token =
+                rmClient.getAMRMToken(attemptId.getApplicationId());
+        // Service will be empty but that's okay, we are just passing down only
+        // AMRMToken down to the real AM which eventually sets the correct
+        // service-address.
+        credentials.addToken(token.getService(), token);
+        File tokenFile = File.createTempFile("unmanagedAMRMToken","",
+                new File(System.getProperty("user.dir")));
+        try {
+            FileUtil.chmod(tokenFile.getAbsolutePath(), "600");
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        tokenFile.deleteOnExit();
+        DataOutputStream os = new DataOutputStream(new FileOutputStream(tokenFile,
+                true));
+        credentials.writeTokenStorageToStream(os);
+        os.close();
+
+        Map<String, String> env = System.getenv();
+        ArrayList<String> envAMList = new ArrayList<String>();
+        boolean setClasspath = false;
+        for (Map.Entry<String, String> entry : env.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if(key.equals("CLASSPATH")) {
+                setClasspath = true;
+                if(classpath != null) {
+                    value = value + File.pathSeparator + classpath;
+                }
+            }
+            envAMList.add(key + "=" + value);
+        }
+
+        if(!setClasspath && classpath!=null) {
+            envAMList.add("CLASSPATH="+classpath);
+        }
+        ContainerId containerId = ContainerId.newContainerId(attemptId, 0);
+
+        String hostname = InetAddress.getLocalHost().getHostName();
+        envAMList.add(Environment.CONTAINER_ID.name() + "=" + containerId);
+        envAMList.add(Environment.NM_HOST.name() + "=" + hostname);
+        envAMList.add(Environment.NM_HTTP_PORT.name() + "=0");
+        envAMList.add(Environment.NM_PORT.name() + "=0");
+        envAMList.add(Environment.LOCAL_DIRS.name() + "= /tmp");
+        envAMList.add(ApplicationConstants.APP_SUBMIT_TIME_ENV + "="
+                + System.currentTimeMillis());
+
+        envAMList.add(ApplicationConstants.CONTAINER_TOKEN_FILE_ENV_NAME + "=" +
+                tokenFile.getAbsolutePath());
+
+        String[] envAM = new String[envAMList.size()];
+        LOG.info("in UnmanagerAMLauncher, launchAM, Runtime.getRuntime().exec!");
+        Process amProc = Runtime.getRuntime().exec(amCmd, envAMList.toArray(envAM));
+        LOG.info("in UnmanagerAMLauncher, launchAM, Runtime.getRuntime().exec success!");
+        final BufferedReader errReader =
+                new BufferedReader(new InputStreamReader(amProc
+                        .getErrorStream()));
+        final BufferedReader inReader =
+                new BufferedReader(new InputStreamReader(amProc
+                        .getInputStream()));
+
+        // read error and input streams as this would free up the buffers
+        // free the error stream buffer
+        Thread errThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String line = errReader.readLine();
+                    while((line != null) && !isInterrupted()) {
+                        System.err.println(line);
+                        line = errReader.readLine();
+                    }
+                } catch(IOException ioe) {
+                    LOG.warn("Error reading the error stream", ioe);
+                }
+            }
+        };
+        Thread outThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String line = inReader.readLine();
+                    while((line != null) && !isInterrupted()) {
+                        System.out.println(line);
+                        line = inReader.readLine();
+                    }
+                } catch(IOException ioe) {
+                    LOG.warn("Error reading the out stream", ioe);
+                }
+            }
+        };
+        try {
+            errThread.start();
+            outThread.start();
+        } catch (IllegalStateException ise) { }
+
+        // wait for the process to finish and check the exit code
+        try {
+            int exitCode = amProc.waitFor();
+            LOG.info("AM process exited with value: " + exitCode);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            amCompleted = true;
+        }
+
+        try {
+            // make sure that the error thread exits
+            // on Windows these threads sometimes get stuck and hang the execution
+            // timeout and join later after destroying the process.
+            errThread.join();
+            outThread.join();
+            errReader.close();
+            inReader.close();
+        } catch (InterruptedException ie) {
+            LOG.info("ShellExecutor: Interrupted while reading the error/out stream",
+                    ie);
+        } catch (IOException ioe) {
+            LOG.warn("Error while closing the error/out stream", ioe);
+        }
+        amProc.destroy();
+    }
 
     public boolean run() throws IOException, YarnException {
-        LOG.info("Starting Client");
+
+        LOG.info("in UnmanagerAMLauncher, run");
 
         // Connect to ResourceManager
         rmClient.start();
@@ -240,132 +362,6 @@ public class UnmanagedAMLauncher {
         }
     }
 
-    public void launchAM(ApplicationAttemptId attemptId)
-            throws IOException, YarnException {
-        Credentials credentials = new Credentials();
-        Token<AMRMTokenIdentifier> token =
-                rmClient.getAMRMToken(attemptId.getApplicationId());
-        // Service will be empty but that's okay, we are just passing down only
-        // AMRMToken down to the real AM which eventually sets the correct
-        // service-address.
-        credentials.addToken(token.getService(), token);
-        File tokenFile = File.createTempFile("unmanagedAMRMToken","",
-                new File(System.getProperty("user.dir")));
-        try {
-            FileUtil.chmod(tokenFile.getAbsolutePath(), "600");
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-        tokenFile.deleteOnExit();
-        DataOutputStream os = new DataOutputStream(new FileOutputStream(tokenFile,
-                true));
-        credentials.writeTokenStorageToStream(os);
-        os.close();
-
-        Map<String, String> env = System.getenv();
-        ArrayList<String> envAMList = new ArrayList<String>();
-        boolean setClasspath = false;
-        for (Map.Entry<String, String> entry : env.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if(key.equals("CLASSPATH")) {
-                setClasspath = true;
-                if(classpath != null) {
-                    value = value + File.pathSeparator + classpath;
-                }
-            }
-            envAMList.add(key + "=" + value);
-        }
-
-        if(!setClasspath && classpath!=null) {
-            envAMList.add("CLASSPATH="+classpath);
-        }
-        LOG.info("classpath 3 :" +classpath);
-        ContainerId containerId = ContainerId.newContainerId(attemptId, 0);
-
-        String hostname = InetAddress.getLocalHost().getHostName();
-        envAMList.add(Environment.CONTAINER_ID.name() + "=" + containerId);
-        envAMList.add(Environment.NM_HOST.name() + "=" + hostname);
-        envAMList.add(Environment.NM_HTTP_PORT.name() + "=0");
-        envAMList.add(Environment.NM_PORT.name() + "=0");
-        envAMList.add(Environment.LOCAL_DIRS.name() + "= /tmp");
-        envAMList.add(ApplicationConstants.APP_SUBMIT_TIME_ENV + "="
-                + System.currentTimeMillis());
-
-        envAMList.add(ApplicationConstants.CONTAINER_TOKEN_FILE_ENV_NAME + "=" +
-                tokenFile.getAbsolutePath());
-
-        String[] envAM = new String[envAMList.size()];
-        Process amProc = Runtime.getRuntime().exec(amCmd, envAMList.toArray(envAM));
-
-        final BufferedReader errReader =
-                new BufferedReader(new InputStreamReader(amProc
-                        .getErrorStream()));
-        final BufferedReader inReader =
-                new BufferedReader(new InputStreamReader(amProc
-                        .getInputStream()));
-
-        // read error and input streams as this would free up the buffers
-        // free the error stream buffer
-        Thread errThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String line = errReader.readLine();
-                    while((line != null) && !isInterrupted()) {
-                        System.err.println(line);
-                        line = errReader.readLine();
-                    }
-                } catch(IOException ioe) {
-                    LOG.warn("Error reading the error stream", ioe);
-                }
-            }
-        };
-        Thread outThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String line = inReader.readLine();
-                    while((line != null) && !isInterrupted()) {
-                        System.out.println(line);
-                        line = inReader.readLine();
-                    }
-                } catch(IOException ioe) {
-                    LOG.warn("Error reading the out stream", ioe);
-                }
-            }
-        };
-        try {
-            errThread.start();
-            outThread.start();
-        } catch (IllegalStateException ise) { }
-
-        // wait for the process to finish and check the exit code
-        try {
-            int exitCode = amProc.waitFor();
-            LOG.info("AM process exited with value: " + exitCode);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            amCompleted = true;
-        }
-
-        try {
-            // make sure that the error thread exits
-            // on Windows these threads sometimes get stuck and hang the execution
-            // timeout and join later after destroying the process.
-            errThread.join();
-            outThread.join();
-            errReader.close();
-            inReader.close();
-        } catch (InterruptedException ie) {
-            LOG.info("ShellExecutor: Interrupted while reading the error/out stream",
-                    ie);
-        } catch (IOException ioe) {
-            LOG.warn("Error while closing the error/out stream", ioe);
-        }
-        amProc.destroy();
-    }
     private ApplicationAttemptReport monitorCurrentAppAttempt(
             ApplicationId appId, YarnApplicationAttemptState attemptState)
             throws YarnException, IOException {
